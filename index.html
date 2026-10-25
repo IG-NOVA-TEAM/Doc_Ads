@@ -1,0 +1,3561 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ads Flow — Hướng dẫn tích hợp cho app Android</title>
+<meta name="description" content="Tài liệu tích hợp thư viện Ads Flow (com.ignova:ads-flow) cho app Android: cấu hình Maven, AdsFlowConfig, Remote Config, 5 loại quảng cáo và xử lý sự cố.">
+<link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+
+<a class="skip-link" href="#mainContent">Bỏ qua tới nội dung</a>
+
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<!-- ============================ SIDEBAR ============================ -->
+<aside class="sidebar" id="sidebar" aria-label="Mục lục tài liệu">
+  <div class="sidebar__brand">
+    <div class="sidebar__logo" aria-hidden="true">AF</div>
+    <div>
+      <p class="sidebar__title">Ads Flow</p>
+      <p class="sidebar__subtitle">com.ignova:ads-flow</p>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-group">
+      <div class="nav-group__title">Bắt đầu</div>
+      <a class="nav-link" href="#intro"><span class="nav-link__num">0</span>Tổng quan</a>
+      <a class="nav-link" href="#artifact"><span class="nav-link__num">1</span>Maven Artifact</a>
+      <a class="nav-link" href="#manifest"><span class="nav-link__num">2</span>AndroidManifest</a>    </div>
+
+    <div class="nav-group">
+      <div class="nav-group__title">Cấu hình</div>
+      <a class="nav-link" href="#application"><span class="nav-link__num">3</span>Lớp Application</a>
+      <a class="nav-link" href="#adsflowconfig"><span class="nav-link__num">4</span>AdsFlowConfig</a>
+      <a class="nav-link" href="#uiconfig"><span class="nav-link__num">5</span>Cấu hình UI</a>
+      <a class="nav-link" href="#resume"><span class="nav-link__num">6</span>App Open &amp; WelcomeBack</a>
+      <a class="nav-link" href="#language"><span class="nav-link__num">7</span>Đa ngôn ngữ</a>
+      <a class="nav-link" href="#iab"><span class="nav-link__num">8</span>Tắt quảng cáo (IAP)</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group__title">Quảng cáo</div>
+      <a class="nav-link" href="#ads-api"><span class="nav-link__num">9</span>Các loại quảng cáo</a>
+      <a class="nav-link" href="#remote-config"><span class="nav-link__num">10</span>Remote Config</a>
+      <a class="nav-link" href="#tracking"><span class="nav-link__num">11</span>Tracking</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group__title">Tham khảo</div>
+      <a class="nav-link" href="#faq"><span class="nav-link__num">12</span>Xử lý sự cố</a>
+    </div>
+  </nav>
+</aside>
+
+<div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+<!-- ============================ HEADER ============================ -->
+<header class="header">
+  <button class="icon-btn menu-btn" id="mobileMenuBtn" aria-label="Mở mục lục" aria-expanded="false">☰</button>
+
+  <div class="search">
+    <span class="search__icon" aria-hidden="true">⌕</span>
+    <input
+      type="search"
+      class="search__input"
+      id="searchInput"
+      placeholder="Tìm trong tài liệu… (nhấn /)"
+      autocomplete="off"
+      aria-label="Tìm trong tài liệu">
+    <button class="search__clear" id="searchClearBtn" aria-label="Xoá tìm kiếm" hidden>×</button>
+  </div>
+
+  <span class="header__version">v1.0.0</span>
+  <button class="icon-btn" id="themeToggleBtn" aria-label="Đổi giao diện">☀</button>
+</header>
+
+<!-- ============================ MAIN ============================ -->
+<main class="main" id="mainContent">
+
+  <!-- ---------- HERO ---------- -->
+  <div class="hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+    <span class="hero__badge"><span class="hero__dot" aria-hidden="true"></span>Tài liệu tích hợp</span>
+    <h1 class="hero__title">Ads Flow — <span class="grad">quảng cáo &amp; onboarding</span> cho app Android</h1>
+    <p class="hero__lead">
+      Thư viện đóng gói sẵn toàn bộ luồng khởi động: Splash, chọn ngôn ngữ, onboarding, màn chào mừng khi
+      quay lại từ background — kèm quản lý 5 loại quảng cáo và cấu hình từ Firebase Remote Config.
+      App của bạn chỉ cần khai báo dependency, map màn hình chính và gọi vài hàm tải quảng cáo.
+    </p>
+
+    <div class="hero__cta">
+      <a class="btn btn--primary" href="#artifact">Bắt đầu tích hợp →</a>
+      <a class="btn btn--ghost" href="#adsflowconfig">Xem AdsFlowConfig</a>
+    </div>
+
+    <div class="hero__meta">
+      <span class="chip"><code>minSdk 24</code></span>
+      <span class="chip"><code>compileSdk 37</code></span>
+      <span class="chip">Java 17</span>
+      <span class="chip">Kotlin</span>
+      <span class="chip">ViewBinding</span>
+      <span class="chip">Remote Config</span>
+    </div>
+
+    <div class="features">
+      <div class="feature reveal">
+        <div class="feature__icon" aria-hidden="true">🚀</div>
+        <h3 class="feature__title">Flow khởi động có sẵn</h3>
+        <p class="feature__desc">Splash → Ngôn ngữ → Onboarding → Main. Không cần viết UI nào.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature__icon" aria-hidden="true">📺</div>
+        <h3 class="feature__title">5 định dạng quảng cáo</h3>
+        <p class="feature__desc">Banner, Native, Interstitial, Rewarded, App Open — cùng một API.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature__icon" aria-hidden="true">☁️</div>
+        <h3 class="feature__title">Bật/tắt từ server</h3>
+        <p class="feature__desc">Đổi ad unit, tần suất, bật/tắt vị trí — không cần phát hành app.</p>
+      </div>
+      <div class="feature reveal">
+        <div class="feature__icon" aria-hidden="true">🎨</div>
+        <h3 class="feature__title">Tuỳ biến UI đầy đủ</h3>
+        <p class="feature__desc">Màu, hình, chữ của từng màn — truyền qua AdsFlowConfig.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= #intro ======================= -->
+  <section class="section reveal" id="intro">
+    <p class="section__eyebrow">Tổng quan</p>
+    <h2 class="section__title">Ads Flow hoạt động như thế nào</h2>
+    <p class="section__lead">
+      Khi bạn khai báo dependency và cho <code>MyApplication</code> kế thừa
+      <code>AdsFlowApplication</code>, thư viện tự lo toàn bộ luồng điều hướng. Màn hình
+      <b>LAUNCHER</b> là <code>SplashActivity</code> của thư viện — app của bạn không cần khai báo.
+    </p>
+
+    <div class="section__body">
+      <div class="flow">
+        <b>Trường hợp 1 (isOnboardingOnce = false, Mặc định):</b><br>
+        [SplashActivity] <span class="arrow">➜</span> [LanguageStartActivity] <span class="arrow">➜</span> [IntroActivity] <span class="arrow">➜</span> <b>[MainActivity của bạn]</b>
+        <br><br>
+        <b>Trường hợp 2 (isOnboardingOnce = true):</b><br>
+        • Lần đầu mở: [SplashActivity] <span class="arrow">➜</span> [LanguageStartActivity] <span class="arrow">➜</span> [IntroActivity] <span class="arrow">➜</span> <b>[MainActivity]</b><br>
+        • Từ lần 2 trở đi: [SplashActivity] <span class="arrow">➜</span> <b>[MainActivity]</b> (bỏ qua Language &amp; Intro)
+        <br><br>
+        <span class="loop">↳ Khi ẩn app rồi mở lại: mở [WelcomeBackActivity] nếu cờ Ads Resume bật và màn hình không bị loại trừ</span>
+      </div>
+
+      <h3>Quản lý trạng thái bằng SharedPreferences</h3>
+      <p>
+        Thư viện lưu trạng thái Onboarding và tùy chọn ngôn ngữ trong
+        <code>SharedPreferences</code> (tên file <code>ignova_ads_flow_pref</code>):
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Cờ trong SharedPreferences</th><th>Ý nghĩa</th><th>Hàm đọc/ghi</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>key_ads_onboarding_completed</code></td>
+              <td>Đã hoàn thành toàn bộ Onboarding (qua Intro/NativeFull)</td>
+              <td><code>AdsFlow.isOnboardingCompleted(ctx)</code><br><code>AdsFlow.setOnboardingCompleted(ctx, true)</code></td>
+            </tr>
+            <tr>
+              <td><code>key_ads_language_done</code></td>
+              <td>Người dùng đã chọn ngôn ngữ ở LanguageStart</td>
+              <td><code>AdsFlow.isLanguageDone(ctx)</code><br><code>AdsFlow.setLanguageDone(ctx, true)</code></td>
+            </tr>
+            <tr>
+              <td><code>key_ads_intro_done</code></td>
+              <td>Người dùng đã xem xong slide onboarding</td>
+              <td><code>AdsFlow.isIntroDone(ctx)</code><br><code>AdsFlow.setIntroDone(ctx, true)</code></td>
+            </tr>
+            <tr>
+              <td><code>key_ads_selected_language</code></td>
+              <td>Mã ngôn ngữ đang chọn (mặc định "en")</td>
+              <td><code>AdsFlow.getSelectedLanguage(ctx)</code><br><code>AdsFlow.setSelectedLanguage(ctx, "vi")</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Nguyên lý điều hướng</h3>
+      <ol class="steps">
+        <li>
+          <strong>SplashActivity — luôn chạy đầu tiên</strong>
+          Khởi tạo SDK, fetch Remote Config, tải cấu hình UI do app truyền qua <code>AdsFlowConfig</code>.
+        </li>
+        <li>
+          <strong>Kiểm tra Onboarding qua <code>AdsFlow.shouldShowOnboarding(context)</code></strong>
+          <ul>
+            <li>Nếu <code>config.isOnboardingOnce == false</code>: Luôn trả về <code>true</code> $\rightarrow$ Mở <code>LanguageStartActivity</code>, sau đó sang <code>IntroActivity</code> rồi mới về <code>MainActivity</code>.</li>
+            <li>Nếu <code>config.isOnboardingOnce == true</code>: Kiểm tra <code>!isOnboardingCompleted(context)</code>. Nếu chưa xong Onboarding $\rightarrow$ mở <code>LanguageStartActivity</code>; nếu đã xong ở lần trước $\rightarrow$ đi thẳng <code>MainActivity</code>.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Khi mất kết nối Internet</strong>
+          Nếu không có mạng, <code>SplashActivity</code> tự động điều hướng sang <code>NoInternetActivity</code>.
+        </li>
+      </ol>
+
+      <div class="note">
+        <p class="note__title">📌 Về tài liệu này</p>
+        <p>
+          Trang này hướng dẫn tích hợp từ phía <b>app sử dụng thư viện</b>. Tài liệu dành cho người
+          <b>phát triển và phát hành</b> thư viện (build local, publish, ProGuard) nằm trong file
+          <code>IMPLEMENT.md</code> ở thư mục gốc repository.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #artifact ======================= -->
+  <section class="section reveal" id="artifact">
+    <p class="section__eyebrow">Bước 1</p>
+    <h2 class="section__title">Tích hợp Maven Artifact</h2>
+    <p class="section__lead">
+      Thư viện được publish dưới tên <code>com.ignova:ads-flow</code> lên
+      <b>GitHub Packages</code>. Bạn cần khai báo kho lưu trữ, thông tin xác thực và dependency.
+    </p>
+
+    <div class="section__body">
+      <h3>1.1. Khai báo kho lưu trữ Maven</h3>
+      <p>
+        Trong <code>settings.gradle.kts</code>, thêm kho GitHub Packages vào
+        <code>dependencyResolutionManagement</code>:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">settings.gradle.kts</span>
+          <span class="code__tag">gradle</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+
+        <span class="tok-cmt">// Kho chứa com.ignova:ads-flow và com.ignova:ad-lib</span>
+        maven {
+            name = <span class="tok-str">"GitHubPackages"</span>
+            url = uri(<span class="tok-str">"https://maven.pkg.github.com/IG-NOVA-TEAM/Ads_Flow"</span>)
+            credentials {
+                username = providers.gradleProperty(<span class="tok-str">"gpr.user"</span>).orNull
+                    ?: providers.environmentVariable(<span class="tok-str">"GH_USERNAME"</span>).orNull
+                    ?: providers.environmentVariable(<span class="tok-str">"GITHUB_ACTOR"</span>).orNull
+                password = providers.gradleProperty(<span class="tok-str">"gpr.key"</span>).orNull
+                    ?: providers.environmentVariable(<span class="tok-str">"GH_PAT"</span>).orNull
+                    ?: providers.environmentVariable(<span class="tok-str">"GITHUB_TOKEN"</span>).orNull
+            }
+        }
+    }
+}</code></pre>
+      </div>
+
+      <h3>1.2. Khai báo thông tin xác thực</h3>
+      <p>
+        Kho yêu cầu xác thực. Đặt thông tin vào <code>gradle.properties</code> ở thư mục gốc project,
+        hoặc an toàn hơn là đặt ở <code>~/.gradle/gradle.properties</code> trên máy cá nhân để không bị
+        commit lên Git.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">~/.gradle/gradle.properties</span>
+          <span class="code__tag">config</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-cmt"># Thông tin xác thực để tải ads-flow từ GitHub Packages</span>
+gpr.user=YOUR_GITHUB_USERNAME
+gpr.key=YOUR_GITHUB_PAT</code></pre>
+      </div>
+
+      <div class="note note--warn">
+        <p class="note__title">⚠️ Bảo mật</p>
+        <p>
+          PAT cần quyền <code>read:packages</code>. Không commit giá trị thật vào
+          <code>gradle.properties</code> trong repo. Nếu gặp lỗi 401, xem <a href="#faq">mục 12.1</a>.
+        </p>
+      </div>
+
+      <h3>1.3. Khai báo dependency</h3>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/build.gradle.kts</span>
+          <span class="code__tag">gradle</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>android {
+    compileSdk = 37
+
+    defaultConfig {
+        minSdk = 24
+        targetSdk = 37
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+    }
+}
+
+dependencies {
+    implementation(<span class="tok-str">"com.ignova:ads-flow:1.0.0"</span>)
+}</code></pre>
+      </div>
+
+      <h3>1.4. Khai báo ID ứng dụng (AdMob &amp; Facebook)</h3>
+      <p>
+        Thư viện khai báo sẵn trong manifest các <code>meta-data</code> cần giá trị ứng dụng của
+        bạn. Vì vậy bạn <b>bắt buộc</b> phải cấp 3 giá trị này qua
+        <code>manifestPlaceholders</code> trong <code>defaultConfig</code> — nếu thiếu, build sẽ
+        fail với lỗi <i>"requires a placeholder substitution but no value for … is provided"</i>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/build.gradle.kts</span>
+          <span class="code__tag">gradle</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>android {
+    defaultConfig {
+        applicationId = <span class="tok-str">"com.example.myapp"</span>
+        minSdk = 24
+        targetSdk = 37
+
+        <span class="tok-cmt">// Bắt buộc — AdMob App ID (lấy trong AdMob Console)</span>
+        manifestPlaceholders[<span class="tok-str">"admobAppId"</span>] = <span class="tok-str">"ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy"</span>
+
+        <span class="tok-cmt">// Bắt buộc — Facebook App ID</span>
+        manifestPlaceholders[<span class="tok-str">"facebookAppId"</span>] = <span class="tok-str">"1234567890123456"</span>
+
+        <span class="tok-cmt">// Bắt buộc — Facebook Client Token</span>
+        manifestPlaceholders[<span class="tok-str">"facebookClientToken"</span>] = <span class="tok-str">"abcdef0123456789abcdef0123456789"</span>
+    }
+}</code></pre>
+      </div>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">Giải thích từng placeholder</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Placeholder</div>
+          <div>Ý nghĩa &amp; cách lấy</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">admobAppId</div>
+          <div class="annot__note">
+            <p><b>AdMob App ID</b> — định danh ứng dụng trong hệ thống Google Ads.</p>
+            <p>Lấy ở <b>AdMob Console → App Settings → App ID</b>. Định dạng:
+              <code>ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy</code> — có dấu <code>~</code> ở giữa.</p>
+            <p>Quan trọng: đây là <b>App ID</b> (dấu <code>~</code>), <b>không phải</b> Ad Unit ID
+              (dấu <code>/</code>) mà bạn khai báo ở Remote Config.</p>
+            <p>Test ads của Google dùng App ID:
+              <code>ca-app-pub-3940256099942544~3347511713</code> — dùng ID này khi phát triển.</p>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">facebookAppId</div>
+          <div class="annot__note">
+            <p><b>Facebook App ID</b> — dùng cho Facebook Audience Network (một nguồn quảng cáo trong
+              mediation).</p>
+            <p>Lấy ở <b>Meta for Developers → My Apps → Settings → Basic</b> — trường
+              <i>App ID</i>.</p>
+            <p>Đây là chuỗi số, ví dụ <code>1234567890123456</code>. Nếu app không dùng Facebook,
+              vẫn phải đặt một giá trị (chuỗi rỗng cũng được) vì thư viện khai báo sẵn
+              <code>meta-data</code> này.</p>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">facebookClientToken</div>
+          <div class="annot__note">
+            <p><b>Facebook Client Token</b> — dùng để gọi Facebook Graph API (ví dụ lấy
+              access token cho ads).</p>
+            <p>Lấy ở <b>Meta for Developers → My Apps → Settings → Basic → Client Token</b>, hoặc
+              tự sinh trong <b>Settings → Advanced → Client Token → Generate</b>.</p>
+            <p>Đây là chuỗi hex 32 ký tự, ví dụ
+              <code>abcdef0123456789abcdef0123456789</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note note--danger">
+        <p class="note__title">🐛 Lỗi dễ gặp: dính ký tự thừa trong App ID</p>
+        <p>
+          AdMob App ID phải kết thúc bằng <b>9 chữ số</b> sau dấu <code>~</code>. Nếu bạn copy-paste
+          nhầm và bị dính thêm ký tự, ví dụ:
+        </p>
+        <p><code>ca-app-pub-3940256099942544~3347511713m</code> <span style="color:var(--danger)">← sai, có chữ "m" thừa</span></p>
+        <p><code>ca-app-pub-3940256099942544~3347511713</code> <span style="color:var(--ok)">← đúng</span></p>
+        <p>
+          App vẫn build được và vẫn chạy, nhưng quảng cáo <b>không bao giờ hiện</b> — Google Ads
+          từ chối App ID không hợp lệ và chỉ ghi log lỗi, không báo trong UI.
+        </p>
+        <p>
+          <b>Cách kiểm tra:</b> sau khi build, mở
+          <code>app/build/intermediates/merged_manifest/&lt;buildType&gt;/…/AndroidManifest.xml</code>,
+          tìm dòng <code>com.google.android.gms.ads.APPLICATION_ID</code> và đối chiếu kỹ với
+          giá trị trong AdMob Console.
+        </p>
+      </div>
+
+      <div class="note note--warn">
+        <p class="note__title">⚠️ Ba giá trị này không được để trống khi phát hành</p>
+        <p>
+          Giá trị test của Google (<code>ca-app-pub-3940256099942544~3347511713</code>) chỉ dùng
+          khi phát triển. Nếu bạn phát hành app với App ID test, AdMob sẽ
+          <b>không hiển thị quảng cáo thật</b> và tài khoản AdMob của bạn có thể bị gắn cờ.
+        </p>
+        <p>
+          Cách an toàn nhất là để ID nằm trong biến môi trường thay vì hard-code, rồi đổi giá trị
+          theo build type:
+        </p>
+      </div>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/build.gradle.kts — tách ID theo build type</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>android {
+    defaultConfig {
+        manifestPlaceholders[<span class="tok-str">"facebookAppId"</span>] = <span class="tok-str">""</span>
+        manifestPlaceholders[<span class="tok-str">"facebookClientToken"</span>] = <span class="tok-str">""</span>
+    }
+
+    buildTypes {
+        debug {
+            manifestPlaceholders[<span class="tok-str">"admobAppId"</span>] =
+                <span class="tok-str">"ca-app-pub-3940256099942544~3347511713"</span>  <span class="tok-cmt">// test ads</span>
+        }
+        release {
+            manifestPlaceholders[<span class="tok-str">"admobAppId"</span>] =
+                providers.gradleProperty(<span class="tok-str">"admobAppId"</span>).get()      <span class="tok-cmt">// ID thật</span>
+        }
+    }
+}</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 Tự kiểm tra trước khi phát hành</p>
+        <p>
+          Mở <code>app/build/intermediates/merged_manifest/&lt;buildType&gt;/…/AndroidManifest.xml</code>
+          sau khi build và tìm dòng <code>com.google.android.gms.ads.APPLICATION_ID</code> — giá trị
+          phải là App ID của bạn, không phải ID test.
+        </p>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 Bắt buộc</p>
+        <p>
+          Thư viện dùng <b>ViewBinding</b> và <b>Java 17</b>. Nếu project của bạn chưa bật
+          ViewBinding, hãy bật ở module app:
+        </p>
+        <div class="code">
+          <div class="code__bar">
+            <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="code__file">app/build.gradle.kts</span>
+            <button class="code__copy">Copy</button>
+          </div>
+<pre><code>buildFeatures {
+    viewBinding = true
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #manifest ======================= -->
+  <section class="section reveal" id="manifest">
+    <p class="section__eyebrow">Bước 2</p>
+    <h2 class="section__title">Cấu hình AndroidManifest.xml</h2>
+    <p class="section__lead">
+      Thư viện tự khai báo sẵn toàn bộ màn hình flow (<code>SplashActivity</code>,
+      <code>LanguageStartActivity</code>, <code>IntroActivity</code>,
+      <code>WelcomeBackActivity</code>, <code>NoInternetActivity</code>,
+      <code>NativeFullActivity</code>) cùng các quyền mạng và <code>meta-data</code> AdMob.
+      <b>App của bạn chỉ cần khai báo Application class và trỏ màn hình LAUNCHER về
+      <code>SplashActivity</code> của thư viện.</b>
+    </p>
+
+    <div class="section__body">
+      <h3>2.1. Manifest đầy đủ</h3>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/src/main/AndroidManifest.xml</span>
+          <span class="code__tag">xml</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>&lt;?xml version=<span class="tok-str">"1.0"</span> encoding=<span class="tok-str">"utf-8"</span>?&gt;
+&lt;manifest xmlns:android=<span class="tok-str">"http://schemas.android.com/apk/res/android"</span>
+    xmlns:tools=<span class="tok-str">"http://schemas.android.com/tools"</span>&gt;
+
+    &lt;application
+        android:name=<span class="tok-str">".MyApplication"</span>
+        android:allowBackup=<span class="tok-str">"true"</span>
+        android:icon=<span class="tok-str">"@mipmap/ic_launcher"</span>
+        android:label=<span class="tok-str">"@string/app_name"</span>
+        android:roundIcon=<span class="tok-str">"@mipmap/ic_launcher_round"</span>
+        android:supportsRtl=<span class="tok-str">"true"</span>
+        android:theme=<span class="tok-str">"@style/Theme.MyApp"</span>
+        tools:ignore=<span class="tok-str">"DiscouragedApi,LockedOrientationActivity"</span>&gt;
+
+        <span class="tok-cmt">&lt;!-- Màn hình LAUNCHER: SplashActivity của thư viện --&gt;</span>
+        &lt;activity
+            android:name=<span class="tok-str">"com.ignova.adsflow.flow.splash.SplashActivity"</span>
+            android:exported=<span class="tok-str">"true"</span>
+            android:screenOrientation=<span class="tok-str">"portrait"</span>
+            tools:replace=<span class="tok-str">"android:exported"</span>&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=<span class="tok-str">"android.intent.action.MAIN"</span> /&gt;
+                &lt;category android:name=<span class="tok-str">"android.intent.category.LAUNCHER"</span> /&gt;
+            &lt;/intent-filter&gt;
+        &lt;/activity&gt;
+
+        <span class="tok-cmt">&lt;!-- Màn hình chính của app. KHÔNG thêm intent-filter --&gt;</span>
+        &lt;activity
+            android:name=<span class="tok-str">".MainActivity"</span>
+            android:exported=<span class="tok-str">"false"</span>
+            android:screenOrientation=<span class="tok-str">"portrait"</span> /&gt;
+
+    &lt;/application&gt;
+&lt;/manifest&gt;</code></pre>
+      </div>
+
+      <h3>2.2. Vì sao phải trỏ LAUNCHER về SplashActivity?</h3>
+      <p>
+        <code>SplashActivity</code> của thư viện được khai báo <code>android:exported="true"</code>
+        nhưng <b>không</b> kèm <code>intent-filter</code> MAIN/LAUNCHER — vì thư viện không biết app
+        của bạn muốn dùng màn nào làm màn hình khởi động. Nhờ vậy bạn có thể tự do chọn:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Cách khai báo</th><th>Kết quả</th><th>Nên dùng khi</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Trỏ LAUNCHER về <code>SplashActivity</code> của thư viện</td>
+              <td>App mở ra → Splash của thư viện → ngôn ngữ → onboarding → Main của bạn</td>
+              <td><b>Mặc định</b> — muốn dùng flow onboarding của thư viện</td>
+            </tr>
+            <tr>
+              <td>Đặt LAUNCHER trên <code>MainActivity</code> của bạn</td>
+              <td>App mở thẳng vào Main, bỏ qua flow</td>
+              <td>App đã có flow riêng, chỉ muốn dùng phần quảng cáo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note note--danger">
+        <p class="note__title">🐛 Dễ sai nhất: khai báo trùng LAUNCHER</p>
+        <p>
+          Nếu bạn đặt <code>intent-filter</code> MAIN/LAUNCHER trên <b>cả</b>
+          <code>SplashActivity</code> và <code>MainActivity</code>, hệ thống sẽ hiện hộp thoại
+          "Open with" mỗi lần mở app. Chỉ <b>một</b> activity được mang LAUNCHER.
+        </p>
+        <p>
+          Nếu bạn đặt LAUNCHER trên <code>MainActivity</code> mà quên khai báo
+          <code>SplashActivity</code>, ứng dụng vẫn chạy nhưng không có màn Splash của thư viện —
+          các quảng cáo splash (native/inter/app-open) sẽ không bao giờ hiển thị.
+        </p>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 tools:replace="android:exported"</p>
+        <p>
+          Thư viện khai báo <code>SplashActivity</code> với <code>android:exported="true"</code>.
+          Khi bạn khai báo lại activity này trong app manifest, manifest merger sẽ báo xung đột giá
+          trị. Thêm <code>tools:replace="android:exported"</code> để chỉ định rõ giá trị của app
+          thắng — như trong ví dụ ở mục 2.1.
+        </p>
+      </div>
+
+      <h3>2.3. Những gì thư viện đã khai báo sẵn</h3>
+      <p>Bạn không cần khai báo lại những mục dưới đây:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Loại</th><th>Nội dung</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Quyền</td><td><code>INTERNET</code>, <code>ACCESS_NETWORK_STATE</code>, <code>ACCESS_WIFI_STATE</code>, <code>AD_ID</code>, <code>WAKE_LOCK</code></td></tr>
+            <tr><td>Activities</td><td><code>SplashActivity</code>, <code>NativeFullActivity</code>, <code>LanguageStartActivity</code>, <code>LanguageSettingActivity</code>, <code>IntroActivity</code>, <code>WelcomeBackActivity</code>, <code>NoInternetActivity</code></td></tr>
+            <tr><td>AdMob flags</td><td><code>OPTIMIZE_INITIALIZATION</code>, <code>OPTIMIZE_AD_LOADING</code>, <code>AD_MANAGER_APP</code></td></tr>
+            <tr><td>Facebook flags</td><td><code>AutoInitEnabled</code>, <code>AutoLogAppEventsEnabled</code>, <code>AdvertiserIDCollectionEnabled</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>2.4. Firebase (Remote Config &amp; Analytics)</h3>
+      <p>
+        Thư viện dùng Firebase Remote Config làm nguồn cấu hình và Firebase Analytics để ghi event.
+        Vì vậy app của bạn cần thêm:
+      </p>
+
+      <ol class="steps">
+        <li>
+          <strong>File google-services.json</strong>
+          Đặt tại <code>app/google-services.json</code> (thư mục <code>app/</code>, không phải
+          <code>app/src/main/</code>). File này chứa <code>api_key</code>, <code>project_id</code>,
+          <code>app_id</code> — những giá trị Firebase cần để khởi tạo.
+        </li>
+        <li>
+          <strong>Apply plugin google-services</strong>
+          Trong <code>app/build.gradle.kts</code>:
+        </li>
+      </ol>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/build.gradle.kts</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.google.services)
+}
+
+dependencies {
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.config)      <span class="tok-cmt">// Remote Config</span>
+    implementation(libs.firebase.analytics)  <span class="tok-cmt">// Analytics</span>
+}</code></pre>
+      </div>
+
+      <div class="note note--ok">
+        <p class="note__title">✅ Firebase là tuỳ chọn, không bắt buộc</p>
+        <p>
+          Nếu app chưa apply plugin <code>google-services</code> hoặc thiếu
+          <code>google-services.json</code>, thư viện vẫn chạy bình thường: Remote Config trả về
+          <code>null</code> và Analytics bỏ qua event, chỉ ghi log warning. Ads sẽ dùng cấu hình mặc
+          định — app không bị crash.
+        </p>
+        <p>
+          Nhưng nếu bạn muốn bật/tắt quảng cáo từ server (mục 10) thì Firebase là bắt buộc.
+        </p>
+      </div>
+
+      <div class="note note--warn">
+        <p class="note__title">⚠️ Kiểm tra trước khi phát hành</p>
+        <p>
+          Sau khi build, mở file
+          <code>app/build/intermediates/merged_manifest/&lt;buildType&gt;/…/AndroidManifest.xml</code> và
+          xác nhận <code>com.google.android.gms.ads.APPLICATION_ID</code> có giá trị App ID thật
+          của bạn — không phải ID test (xem lại <a href="#artifact">mục 1.4</a>).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #application ======================= -->
+  <section class="section reveal" id="application">
+    <p class="section__eyebrow">Bước 3</p>
+    <h2 class="section__title">Cấu hình lớp Application</h2>
+    <p class="section__lead">
+      Tạo <code>MyApplication</code> kế thừa <code>AdsFlowApplication</code>. Từ đây bạn không cần
+      tự khởi tạo Firebase, Adjust, AppsFlyer hay tracker — thư viện đã lo hết trong
+      <code>onCreate()</code>.
+    </p>
+
+    <div class="section__body">
+      <h3>3.1. Lớp Application tối thiểu</h3>
+      <p>
+        Chỉ cần một dòng là app đã có toàn bộ flow. Bạn sẽ thêm config ở những bước sau.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/src/main/java/com/example/myapp/MyApplication.kt</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>package com.example.myapp
+
+<span class="tok-kw">import</span> com.ignova.adsflow.core.AdsFlowApplication
+
+<span class="tok-kw">class</span> <span class="tok-typ">MyApplication</span> : <span class="tok-typ">AdsFlowApplication</span>() {
+    <span class="tok-cmt">// Tất cả khởi tạo đã có sẵn trong onCreate() của AdsFlowApplication</span>
+}</code></pre>
+      </div>
+
+      <h3>3.2. Khai báo màn hình</h3>
+      <p>
+        Override <code>configureFlow()</code> và truyền <code>activityMap</code>. Đây là nơi duy nhất
+        thư viện biết app của bạn ở đâu.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>package com.example.myapp
+
+<span class="tok-kw">import</span> android.app.Activity
+<span class="tok-kw">import</span> com.ignova.adsflow.core.AdsFlowApplication
+<span class="tok-kw">import</span> com.ignova.adsflow.flow.AdsFlowConfig
+<span class="tok-kw">import</span> com.ignova.adsflow.flow.FlowTarget
+
+<span class="tok-kw">class</span> <span class="tok-typ">MyApplication</span> : <span class="tok-typ">AdsFlowApplication</span>() {
+
+    <span class="tok-kw">override fun</span> configureFlow(): <span class="tok-typ">AdsFlowConfig</span> = <span class="tok-typ">AdsFlowConfig</span>(
+        activityMap = mapOf(
+            <span class="tok-cmt">// Bắt buộc — màn hình chính của app</span>
+            FlowTarget.MAIN to MainActivity::class.java,
+
+            <span class="tok-cmt">// Tuỳ chọn — dùng màn WelcomeBack riêng thay vì mặc định</span>
+            FlowTarget.WELCOME_BACK to MyWelcomeBackActivity::class.java,
+        )
+    )
+}</code></pre>
+      </div>
+
+      <div class="note note--warn">
+        <p class="note__title">⚠️ excludedFromWelcomeBack() — Chặn WelcomeBack mở nhầm</p>
+        <p>
+          Mặc định thư viện đã tự động loại trừ 4 màn hình: <code>SplashActivity</code>, <code>NativeFullActivity</code>, <code>NoInternetActivity</code>, <code>WelcomeBackActivity</code>,
+          đồng thời <b>tự động bỏ qua các Activity nội bộ của AdMob</b> (<code>com.google.android.gms.ads.*</code>).
+          Nếu app của bạn muốn chặn WelcomeBack khi người dùng ẩn/mở lại app tại màn <code>LanguageStartActivity</code>, <code>IntroActivity</code> hoặc các màn riêng (như Paywall, Webview thanh toán), hãy override hàm này:
+        </p>
+      </div>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt — thêm excludedFromWelcomeBack</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.flow.language.LanguageStartActivity
+<span class="tok-kw">import</span> com.ignova.adsflow.flow.splash.SplashActivity
+<span class="tok-kw">import</span> com.ignova.adsflow.flow.splash.NativeFullActivity
+<span class="tok-kw">import</span> com.ignova.adsflow.flow.nointernet.NoInternetActivity
+<span class="tok-kw">import</span> com.ignova.adsflow.flow.welcomeback.WelcomeBackActivity
+
+<span class="tok-kw">override fun</span> excludedFromWelcomeBack(): <span class="tok-typ">Set</span>&lt;<span class="tok-typ">Class</span>&lt;<span class="tok-kw">out</span> Activity&gt;&gt; = setOf(
+    SplashActivity::class.java,
+    LanguageStartActivity::class.java, <span class="tok-cmt">// Thêm màn cần chặn vào đây</span>
+    NativeFullActivity::class.java,
+    NoInternetActivity::class.java,
+    WelcomeBackActivity::class.java
+)</code></pre>
+      </div>
+
+      <h3>3.3. Bảng FlowTarget</h3>
+      <p>Các key chuẩn mà thư viện dùng để điều hướng:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Key</th><th>Hằng số</th><th>Ý nghĩa</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>flow_target_main</code></td><td><code>FlowTarget.MAIN</code></td><td>Màn hình chính của app — luồng flow xong sẽ về đây. <b>Bắt buộc</b></td></tr>
+            <tr><td><code>flow_target_welcome_back</code></td><td><code>FlowTarget.WELCOME_BACK</code></td><td>Màn WelcomeBack khi app resume. Không map thì dùng mặc định của thư viện</td></tr>
+            <tr><td><code>flow_target_no_internet</code></td><td><code>FlowTarget.NO_INTERNET</code></td><td>Màn mất kết nối</td></tr>
+            <tr><td><code>flow_target_language</code></td><td><code>FlowTarget.LANGUAGE</code></td><td>Màn chọn ngôn ngữ (nếu app tự làm)</td></tr>
+            <tr><td><code>flow_target_intro</code></td><td><code>FlowTarget.INTRO</code></td><td>Màn onboarding (nếu app tự làm)</td></tr>
+            <tr><td><code>flow_target_splash</code></td><td><code>FlowTarget.SPLASH</code></td><td>Splash nền tảng của thư viện</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Nếu bạn cần đích tuỳ chỉnh, dùng <code>customTarget(name)</code> để tránh trùng key chuẩn:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-cmt">// → "app_custom_paywall"</span>
+<span class="tok-kw">val</span> paywallKey = customTarget(<span class="tok-str">"paywall"</span>)
+
+<span class="tok-kw">override fun</span> configureFlow(): <span class="tok-typ">AdsFlowConfig</span> = <span class="tok-typ">AdsFlowConfig</span>(
+    activityMap = mapOf(
+        FlowTarget.MAIN to MainActivity::class.java,
+        paywallKey to PaywallActivity::class.java
+    ),
+    isOnboardingOnce = <span class="tok-kw">false</span> <span class="tok-cmt">// true: chỉ đi onboarding lần đầu; false: luôn đi full mỗi lần mở app</span>
+)</code></pre>
+      </div>
+
+      <h3>3.4. Các hàm override khác</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Hàm</th><th>Mặc định</th><th>Khi nào cần override</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>excludedFromWelcomeBack()</code></td>
+              <td><code>Splash, NativeFull, NoInternet, WelcomeBack</code></td>
+              <td>Khi muốn chặn thêm màn hình (như <code>LanguageStartActivity</code>, màn thanh toán) không bị đè WelcomeBack</td>
+            </tr>
+            <tr>
+              <td><code>defaultAdSuppressor()</code></td>
+              <td><code>null</code></td>
+              <td>Khi có gói Premium / VIP / No Ads — xem <a href="#iab">mục 8</a></td>
+            </tr>
+            <tr>
+              <td><code>shouldShowWelcomeBackOnResume()</code></td>
+              <td><code>AdCommon.isShowResume</code></td>
+              <td>Khi chỉ muốn hiện WelcomeBack sau thời gian dài (vd: cách 24 giờ) hoặc theo logic riêng</td>
+            </tr>
+            <tr>
+              <td><code>setupTracker()</code></td>
+              <td><code>AppTrackers.init(this)</code></td>
+              <td>Khi muốn thay tracker mặc định — xem <a href="#tracking">mục 11</a></td>
+            </tr>
+            <tr>
+              <td><code>welcomeBackActivity()</code></td>
+              <td><code>FlowTarget.WELCOME_BACK</code></td>
+              <td>Hiếm khi. Chỉ khi cần chọn màn WelcomeBack linh động theo điều kiện</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 Shortcut có sẵn trên Application</p>
+        <p>
+          <code>AdsFlowApplication</code> đã expose sẵn các shortcut, không cần import
+          <code>AdsFlow</code>:
+        </p>
+        <ul>
+          <li><code>isOnboardingCompleted()</code> / <code>setOnboardingCompleted(true)</code> — kiểm tra/đánh dấu hoàn tất onboarding</li>
+          <li><code>shouldShowOnboarding()</code> — kiểm tra có cần đi qua onboarding không (dựa trên <code>isOnboardingOnce</code>)</li>
+          <li><code>isLanguageDone()</code> / <code>setLanguageDone(true)</code></li>
+          <li><code>isIntroDone()</code> / <code>setIntroDone(true)</code></li>
+          <li><code>isShowingAd</code> — trạng thái có đang hiển thị quảng cáo nào không</li>
+          <li><code>isShowResume</code> — cờ tổng bật/tắt WelcomeBack + App Open Resume</li>
+          <li><code>currentActivity</code> — activity đang foreground</li>
+          <li><code>isAppForeground</code> — app đang foreground hay background</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #adsflowconfig ======================= -->
+  <section class="section reveal" id="adsflowconfig">
+    <p class="section__eyebrow">Bước 4</p>
+    <h2 class="section__title">AdsFlowConfig — tra cứu đầy đủ</h2>
+    <p class="section__lead">
+      <code>AdsFlowConfig</code> là object cấu hình duy nhất mà app truyền cho thư viện. Bảng dưới đây
+      giải thích từng thuộc tính — cột trái là code, cột phải là ý nghĩa và khi nào nên dùng.
+    </p>
+
+    <div class="section__body">
+      <h3>4.1. Cấu trúc tổng thể</h3>
+      <p>
+        Tất cả thuộc tính đều tuỳ chọn và đều có giá trị mặc định — bạn chỉ truyền những gì thực sự
+        cần. Toàn bộ cấu hình được tạo trong <code>configureFlow()</code> và trả về một lần duy nhất
+        lúc <code>onCreate()</code> của Application.
+      </p>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">AdsFlowConfig.kt — thuộc tính cấp cao</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val activityMap: Map&lt;String, Class&lt;out Activity&gt;&gt;</div>
+          <div class="annot__note">
+            <p><b>Bắt buộc.</b> Bản đồ <code>key → Activity class</code> để thư viện biết điều hướng tới đâu.</p>
+            <p>Thư viện dùng map này thay cho <code>Intent(this, Xxx::class.java)</code> cứng nhắc, nên bạn có thể đổi màn hình bất cứ lúc nào mà không phải sửa thư viện.</p>
+            <p>Dùng key chuẩn từ <code>FlowTarget</code>, xem <a href="#application">bước 3.3</a>.</p>
+            <span class="annot__default">mặc định: emptyMap()</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val targetActivityClass: Class&lt;out Activity&gt;?</div>
+          <div class="annot__note">
+            <p>Đích main cũ, giữ lại để tương thích ngược.</p>
+            <p>Chỉ dùng nếu bạn đã có code cũ gọi tham số này. <b>Ưu tiên dùng <code>activityMap[FlowTarget.MAIN]</code></b> — thư viện sẽ fallback về giá trị này khi key MAIN không có trong map.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val isPermissionHandledByApp: Boolean</div>
+          <div class="annot__note">
+            <p><code>true</code> nghĩa là <b>app tự xin quyền</b> (runtime permission) và thư viện sẽ không chặn luồng vào màn hình chính.</p>
+            <p>Đặt <code>false</code> nếu bạn muốn thư viện hiển thị màn xin quyền do thư viện cấu hình (key <code>screen_permission</code>, <code>native_permission</code> trên Remote Config).</p>
+            <span class="annot__default">mặc định: true</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val isOnboardingOnce: Boolean</div>
+          <div class="annot__note">
+            <p><b>Cờ kiểm soát số lần hiển thị Onboarding:</b></p>
+            <p>• <code>false</code> (mặc định): Mỗi lần vào app đều chạy full luồng Onboarding <code>Splash → LanguageStart → Intro → Main</code>.</p>
+            <p>• <code>true</code>: Lần đầu mở app chạy full Onboarding. Sau khi kết thúc, thư viện lưu cờ <code>key_ads_onboarding_completed = true</code>. Từ lần thứ 2 trở đi đi thẳng <code>Splash → Main</code>.</p>
+            <span class="annot__default">mặc định: false</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val introPages: List&lt;IntroPageItem&gt;?</div>
+          <div class="annot__note">
+            <p>Danh sách trang onboarding bị override.</p>
+            <p>Cách viết gọn hơn <code>introConfig.pages</code> — thư viện đọc theo thứ tự: <code>setIntroPages()</code> → <code>introConfig.pages</code> → <code>introPages</code>. Dùng cái nào cũng được, nhưng đừng truyền cả hai cùng lúc để tránh nhập nhằng.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val onFlowCompleted: ((Activity) -&gt; Unit)?</div>
+          <div class="annot__note">
+            <p>Callback được gọi <b>đúng một lần</b> khi luồng Splash → Ngôn ngữ → Onboarding kết thúc, ngay trước khi chuyển sang màn MAIN.</p>
+            <p>Dùng để ghi log "onboarding completed", đặt cờ analytics, hoặc báo cho backend biết user đã qua onboarding.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val splashConfig / languageConfig / introConfig</div>
+          <div class="annot__note">
+            <p>Nhóm cấu hình UI cho 3 màn đầu tiên của flow.</p>
+            <p>Kiểu tương ứng: <code>SplashUiConfig?</code>, <code>LanguageUiConfig?</code>, <code>IntroUiConfig?</code>. Chi tiết từng trường ở <a href="#uiconfig">mục 5</a>.</p>
+            <span class="annot__default">mặc định: null (dùng giao diện của thư viện)</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val nativeFullConfig / welcomeBackConfig</div>
+          <div class="annot__note">
+            <p>Nhóm cấu hình UI cho quảng cáo native toàn màn hình và màn chào mừng khi resume.</p>
+            <p>Kiểu tương ứng: <code>NativeFullUiConfig?</code>, <code>WelcomeBackUiConfig?</code>. Xem <a href="#uiconfig">mục 5.4</a> và <a href="#uiconfig">mục 5.5</a>.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val noInternetConfig / translatingDialogConfig</div>
+          <div class="annot__note">
+            <p>Nhóm cấu hình UI cho màn mất kết nối và hộp thoại đang dịch.</p>
+            <p>Kiểu tương ứng: <code>NoInternetUiConfig?</code>, <code>TranslatingDialogUiConfig?</code>. Xem <a href="#uiconfig">mục 5.6</a> và <a href="#uiconfig">mục 5.7</a>.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>4.2. Bảy nhóm cấu hình UI</h3>
+      <p>
+        Mỗi màn hình của thư viện có một lớp config riêng. Truyền <code>null</code> nghĩa là dùng giao
+        diện mặc định của thư viện. Chi tiết từng trường ở <a href="#uiconfig">mục 5</a>.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Thuộc tính</th><th>Kiểu</th><th>Áp dụng cho màn</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>splashConfig</code></td><td><code>SplashUiConfig?</code></td><td>Splash</td></tr>
+            <tr><td><code>languageConfig</code></td><td><code>LanguageUiConfig?</code></td><td>Chọn ngôn ngữ</td></tr>
+            <tr><td><code>introConfig</code></td><td><code>IntroUiConfig?</code></td><td>Onboarding</td></tr>
+            <tr><td><code>nativeFullConfig</code></td><td><code>NativeFullUiConfig?</code></td><td>Native toàn màn hình</td></tr>
+            <tr><td><code>welcomeBackConfig</code></td><td><code>WelcomeBackUiConfig?</code></td><td>Chào mừng khi resume</td></tr>
+            <tr><td><code>noInternetConfig</code></td><td><code>NoInternetUiConfig?</code></td><td>Mất kết nối</td></tr>
+            <tr><td><code>translatingDialogConfig</code></td><td><code>TranslatingDialogUiConfig?</code></td><td>Hộp thoại đang dịch</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 Quy ước đặt tên thuộc tính</p>
+        <p>
+          Mỗi thuộc tính UI có <b>hai biến thể</b>: một biến nhận giá trị trực tiếp và một biến hậu tố
+          <code>Res</code> nhận resource id. Thư viện luôn ưu tiên giá trị trực tiếp nếu có, ngược lại
+          mới đọc từ resource.
+        </p>
+        <p>
+          Ví dụ <code>title: String?</code> và <code>@StringRes titleRes: Int?</code>:
+          truyền <code>title = "Chào mừng"</code> cho text cố định, hoặc
+          <code>titleRes = R.string.welcome_title</code> để hỗ trợ đa ngôn ngữ.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #uiconfig ======================= -->
+  <section class="section reveal" id="uiconfig">
+    <p class="section__eyebrow">Bước 5</p>
+    <h2 class="section__title">Cấu hình UI chi tiết từng màn</h2>
+    <p class="section__lead">
+      Toàn bộ UI của thư viện nhận string, màu và drawable từ config. Dưới đây là giải thích từng
+      thuộc tính của từng lớp config.
+    </p>
+
+    <div class="section__body">
+
+      <!-- 5.1 SplashUiConfig -->
+      <h3>5.1. SplashUiConfig — màn khởi động</h3>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">SplashUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundRes: Int?</div>
+          <div class="annot__note">
+            <p>Nền của màn Splash — thường là ảnh full-bleed. Nếu bỏ trống, màn dùng nền mặc định của thư viện.</p>
+            <p><code>DrawableRes</code> — truyền <code>R.drawable.bg_splash</code>.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">logoRes: Int?</div>
+          <div class="annot__note">
+            <p>Logo app hiển thị giữa màn Splash.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub1 / appNameSub1Res</div>
+          <div class="annot__note">
+            <p>Dòng tên app thứ nhất (thường là tên app chính).</p>
+            <p>Ưu tiên <code>appNameSub1</code> (string trực tiếp); nếu null thì dùng <code>appNameSub1Res</code>.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub2 / appNameSub2Res</div>
+          <div class="annot__note">
+            <p>Dòng phụ thứ hai — thường là tagline hoặc mô tả ngắn.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">titleColor / titleColorRes</div>
+          <div class="annot__note">
+            <p>Màu chữ cho tên app và tagline.</p>
+            <p>Nhận <code>@ColorInt</code> (giá trị màu trực tiếp) hoặc <code>@ColorRes</code> (id trong <code>colors.xml</code>).</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">progressIndicatorColor / progressIndicatorColorRes</div>
+          <div class="annot__note">
+            <p>Màu của thanh tiến trình đang chạy.</p>
+            <p>Đổi màu này để hòa vào ảnh nền của bạn — dễ thấy sai nhất vì mặc định được thiết kế cho nền tối.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">progressTrackColor / progressTrackColorRes</div>
+          <div class="annot__note">
+            <p>Màu phần nền của thanh tiến trình (phần chưa chạy).</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">containAdsText / containAdsTextRes</div>
+          <div class="annot__note">
+            <p>Dòng chữ thông báo "Nội dung này có thể chứa quảng cáo".</p>
+            <p>Bắt buộc với app phát hành tại một số thị trường — nên dùng biến thể <code>Res</code> để đa ngôn ngữ.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">containAdsTextColor / containAdsTextColorRes</div>
+          <div class="annot__note">
+            <p>Màu của dòng chữ thông báo quảng cáo ở trên.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">loadingMessagesRes: List&lt;Int&gt;</div>
+          <div class="annot__note">
+            <p>Danh sách message hiển thị luân phiên trong lúc chờ (ví dụ "Đang chuẩn bị…", "Đang tải…").</p>
+            <p>Mỗi phần tử là một <code>@StringRes</code>. Danh sách rỗng → thư viện dùng message mặc định. Giữ 3–5 message để đỡ lặp.</p>
+            <span class="annot__default">mặc định: emptyList()</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt — ví dụ SplashUiConfig</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>splashConfig = <span class="tok-typ">SplashUiConfig</span>(
+    backgroundRes = R.drawable.bg_splash,
+    logoRes = R.drawable.logo_app,
+    appNameSub1Res = R.string.app_name,
+    appNameSub2Res = R.string.app_tagline,
+    titleColorRes = R.color.text_primary,
+    progressIndicatorColorRes = R.color.primary,
+    progressTrackColorRes = R.color.progress_track,
+    containAdsTextRes = R.string.contain_ads_notice,
+    containAdsTextColorRes = R.color.text_secondary,
+    loadingMessagesRes = listOf(
+        R.string.loading_01,
+        R.string.loading_02,
+        R.string.loading_03
+    )
+)</code></pre>
+      </div>
+
+      <!-- 5.2 LanguageUiConfig -->
+      <h3>5.2. LanguageUiConfig — màn chọn ngôn ngữ</h3>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">LanguageUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundRes: Int?</div>
+          <div class="annot__note"><p>Nền màn chọn ngôn ngữ.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">title / titleRes</div>
+          <div class="annot__note"><p>Tiêu đề màn hình, ví dụ "Chọn ngôn ngữ".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">titleColor / titleColorRes</div>
+          <div class="annot__note"><p>Màu tiêu đề.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconDoneRes / iconDoneTint / iconDoneTintRes</div>
+          <div class="annot__note"><p>Nút "Xong" ở góc trên: icon gốc và màu tô cho icon (thường là icon vector nên cần tint).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconBackRes / iconBackTint / iconBackTintRes</div>
+          <div class="annot__note"><p>Nút quay lại.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">itemConfig: LanguageItemUiConfig?</div>
+          <div class="annot__note"><p>Cấu hình chi tiết cho từng dòng ngôn ngữ — màu chữ, icon mũi tên, nền dòng được chọn. Xem <code>LanguageItemUiConfig</code> bên dưới.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">isExtendLanguage: Boolean</div>
+          <div class="annot__note">
+            <p><code>true</code> → dùng danh sách ngôn ngữ mở rộng (<code>getAllLangExtend</code>), nhiều quốc gia hơn.</p>
+            <p><code>false</code> → dùng danh sách mặc định (<code>getAllLang</code>) — gọn hơn, phù hợp app nhỏ.</p>
+            <span class="annot__default">mặc định: false</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">customLanguages: List&lt;LanguageModel&gt;?</div>
+          <div class="annot__note">
+            <p>Danh sách ngôn ngữ tự chọn, thay hoàn toàn danh sách mặc định.</p>
+            <p>Chỉ được dùng khi <code>isExtendLanguage = true</code>. Mỗi phần tử là <code>LanguageModel(languageName, code, mainRegion = RegionModel(...))</code> — cần icon cờ cho <code>mainRegion.image</code>.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5.3 LanguageItemUiConfig -->
+      <h4>LanguageItemUiConfig — chi tiết từng dòng ngôn ngữ</h4>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">LanguageItemUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">textSelectedColor / textSelectedColorRes</div>
+          <div class="annot__note"><p>Màu tên ngôn ngữ khi dòng đã chọn. Bản <code>Res</code> đi kèm cũng có.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">textUnselectedColor / textUnselectedColorRes</div>
+          <div class="annot__note"><p>Màu tên ngôn ngữ khi dòng chưa chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">subtextSelectedColor / subtextSelectedColorRes</div>
+          <div class="annot__note"><p>Màu dòng phụ (tên quốc gia / vùng lãnh thổ) khi dòng đã chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">subtextUnselectedColor / subtextUnselectedColorRes</div>
+          <div class="annot__note"><p>Màu dòng phụ khi dòng chưa chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">childTextSelectedColor / childTextSelectedColorRes</div>
+          <div class="annot__note"><p>Màu chữ của các quốc gia con khi dòng cha đã chọn — hiện khi người dùng mở rộng một ngôn ngữ (ví dụ "Tiếng Anh" → 🇬🇧, 🇺🇸, 🇦🇺).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">childTextUnselectedColor / childTextUnselectedColorRes</div>
+          <div class="annot__note"><p>Màu chữ của các quốc gia con khi dòng cha chưa chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconArrowRes / iconArrowTint / iconArrowTintRes</div>
+          <div class="annot__note"><p>Icon mũi tên chỉ báo dòng này có thể mở rộng, và màu tô cho icon đó.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconSelectRes / iconSelectTint / iconSelectTintRes</div>
+          <div class="annot__note"><p>Icon dấu tick khi dòng đang được chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconUnselectRes / iconUnselectTint / iconUnselectTintRes</div>
+          <div class="annot__note"><p>Icon radio tròn cho dòng chưa chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">lineDividerColor / lineDividerColorRes</div>
+          <div class="annot__note"><p>Màu đường kẻ ngăn cách giữa các dòng.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">bgSelectedRes / bgUnselectedRes</div>
+          <div class="annot__note"><p>Nền của dòng khi được chọn và khi chưa chọn. Dùng drawable bo góc để làm nổi dòng đang chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+      </div>
+
+      <!-- 5.4 IntroUiConfig -->
+      <h3>5.3. IntroUiConfig — màn onboarding</h3>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">IntroUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">pages: List&lt;IntroPageItem&gt;?</div>
+          <div class="annot__note">
+            <p><b>Quan trọng nhất.</b> Danh sách trang onboarding bạn muốn hiển thị.</p>
+            <p>Mỗi <code>IntroPageItem</code> gồm: <code>imageRes</code> (bắt buộc), <code>titleRes</code> + <code>descRes</code> (string resource để đa ngôn ngữ), hoặc <code>title</code> + <code>desc</code> (string trực tiếp).</p>
+            <p>Bỏ trống → thư viện dùng trang onboarding mặc định của nó.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundRes: Int?</div>
+          <div class="annot__note"><p>Nền chung của màn onboarding.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnNextText / btnNextTextRes</div>
+          <div class="annot__note"><p>Chữ trên nút đi tiếp. Bị override bởi <code>btnNextLabelRes</code> nếu cả hai cùng có.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnNextLabelRes: Int?</div>
+          <div class="annot__note"><p>Nhãn nút ở các trang <b>chưa phải trang cuối</b>. Mặc định của thư viện là "Next".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnGetStartedLabelRes: Int?</div>
+          <div class="annot__note"><p>Nhãn nút ở <b>trang cuối</b>. Mặc định của thư viện là "Get Started".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnNextTextColor / btnNextTextColorRes</div>
+          <div class="annot__note"><p>Màu chữ nút.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">dotActiveRes / dotActiveColor / dotActiveColorRes</div>
+          <div class="annot__note"><p>Chấm tròn chỉ trang hiện tại — dùng drawable <code>dotActiveRes</code> hoặc chỉ màu nếu drawable là hình tròn mặc định.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">dotInactiveRes / dotInactiveColor / dotInactiveColorRes</div>
+          <div class="annot__note"><p>Chấm tròn các trang chưa tới.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">itemTitleColor / itemTitleColorRes</div>
+          <div class="annot__note"><p>Màu tiêu đề của mỗi trang onboarding.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">itemContentColor / itemContentColorRes</div>
+          <div class="annot__note"><p>Màu mô tả của mỗi trang onboarding.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">isSwipeViewpager: Boolean?</div>
+          <div class="annot__note">
+            <p>Cho phép vuốt ngang qua các trang hay không.</p>
+            <p><code>true</code> → dùng ViewPager vuốt được. <code>false</code> → chuyển trang bằng nút. <code>null</code> → thư viện tự quyết định.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt — ví dụ IntroUiConfig</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>introConfig = <span class="tok-typ">IntroUiConfig</span>(
+    pages = listOf(
+        <span class="tok-typ">IntroPageItem</span>(
+            titleRes = R.string.intro_1_title,
+            descRes = R.string.intro_1_desc,
+            imageRes = R.drawable.img_intro_1
+        ),
+        <span class="tok-typ">IntroPageItem</span>(
+            titleRes = R.string.intro_2_title,
+            descRes = R.string.intro_2_desc,
+            imageRes = R.drawable.img_intro_2
+        ),
+        <span class="tok-typ">IntroPageItem</span>(
+            titleRes = R.string.intro_3_title,
+            descRes = R.string.intro_3_desc,
+            imageRes = R.drawable.img_intro_3
+        ),
+    ),
+    backgroundRes = R.drawable.bg_intro,
+    btnNextLabelRes = R.string.next_label,
+    btnGetStartedLabelRes = R.string.get_started_label,
+    isSwipeViewpager = true
+)</code></pre>
+      </div>
+
+      <!-- 5.5 WelcomeBackUiConfig -->
+      <h3>5.4. WelcomeBackUiConfig — màn chào mừng khi resume</h3>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">WelcomeBackUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">illustrationRes: Int?</div>
+          <div class="annot__note"><p>Ảnh minh hoạ chính của màn. Bị bỏ qua nếu bạn truyền <code>lottieRawRes</code>.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">lottieRawRes: Int?</div>
+          <div class="annot__note">
+            <p>File Lottie trong <code>res/raw</code> — animation động cho màn WelcomeBack.</p>
+            <p>Ưu tiên hơn <code>illustrationRes</code>. Dùng khi muốn hiệu ứng sinh động hơn ảnh tĩnh.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundRes / logoRes</div>
+          <div class="annot__note"><p>Nền và logo app trên màn chào mừng.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub1 / appNameSub1Res</div>
+          <div class="annot__note"><p>Hai dòng tên app, giống hệt Splash — giữ nhất quán giữa hai màn để không bị "vỡ" mạch hình ảnh khi app resume.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub2 / appNameSub2Res</div>
+          <div class="annot__note"><p>Dòng phụ thứ hai (tagline hoặc mô tả ngắn).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameColor / appNameColorRes</div>
+          <div class="annot__note"><p>Màu chữ tên app.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">title / titleRes / titleColor / titleColorRes</div>
+          <div class="annot__note"><p>Tiêu đề màn chào mừng, ví dụ "Chào mừng trở lại!".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">content / contentRes / contentColor / contentColorRes</div>
+          <div class="annot__note"><p>Nội dung mô tả bên dưới tiêu đề — nơi phù hợp để giới thiệu tính năng mới.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnContinueText / btnContinueTextRes</div>
+          <div class="annot__note"><p>Chữ trên nút tiếp tục, ví dụ "Tiếp tục".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnContinueTextColor / btnContinueTextColorRes</div>
+          <div class="annot__note"><p>Màu chữ nút tiếp tục.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+      </div>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt — ví dụ WelcomeBackUiConfig</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>welcomeBackConfig = <span class="tok-typ">WelcomeBackUiConfig</span>(
+    backgroundRes = R.drawable.bg_home,
+    logoRes = R.drawable.logo_app,
+    titleRes = R.string.welcome_back_title,
+    contentRes = R.string.welcome_back_content,
+    btnContinueTextRes = R.string.continue_label,
+    lottieRawRes = R.raw.welcome_back_animation
+)</code></pre>
+      </div>
+
+      <!-- 5.6 NativeFullUiConfig -->
+      <h3>5.5. NativeFullUiConfig — quảng cáo native toàn màn hình</h3>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">NativeFullUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundRes: Int?</div>
+          <div class="annot__note"><p>Nền màn quảng cáo full-screen.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundColor / backgroundColorRes</div>
+          <div class="annot__note"><p>Màu nền thay cho ảnh nếu bạn không dùng drawable.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">statusBarColor / statusBarColorRes</div>
+          <div class="annot__note"><p>Màu thanh trạng thái. Đặt cho khớp với nền màn quảng cáo.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconCloseRes / iconCloseTint / iconCloseTintRes</div>
+          <div class="annot__note"><p>Nút đóng ở góc màn quảng cáo full-screen — cần tint cho icon vector.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+      </div>
+
+      <!-- 5.7 NoInternetUiConfig -->
+      <h3>5.6. NoInternetUiConfig — màn mất kết nối</h3>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">NoInternetUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundRes: Int?</div>
+          <div class="annot__note"><p>Nền màn mất kết nối.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">headerTitle / headerTitleRes</div>
+          <div class="annot__note"><p>Dòng header nhỏ phía trên (ví dụ "Mất kết nối").</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">headerTitleColor / headerTitleColorRes</div>
+          <div class="annot__note"><p>Màu dòng header.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconRes / iconTint / iconTintRes</div>
+          <div class="annot__note"><p>Icon minh hoạ (ví dụ icon wifi bị gạch) và màu tô cho icon vector.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">title / titleRes / titleColor / titleColorRes</div>
+          <div class="annot__note"><p>Tiêu đề chính của màn, ví dụ "Không có kết nối".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">description / descriptionRes / descriptionColor / descriptionColorRes</div>
+          <div class="annot__note"><p>Mô tả hướng dẫn người dùng kiểm tra lại mạng.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnTryAgainText / btnTryAgainTextRes</div>
+          <div class="annot__note"><p>Chữ nút thử lại, ví dụ "Thử lại".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnTryAgainTextColor / btnTryAgainTextColorRes</div>
+          <div class="annot__note"><p>Màu chữ nút thử lại.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnTryAgainBackgroundRes</div>
+          <div class="annot__note"><p>Drawable nền nút thử lại.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnTryAgainBackgroundTint / btnTryAgainBackgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô cho nền nút — dùng khi nền là shape drawable mà bạn muốn đổi màu theo theme.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+      </div>
+
+      <!-- 5.8 TranslatingDialogUiConfig -->
+      <h3>5.7. TranslatingDialogUiConfig — hộp thoại đang dịch</h3>
+
+      <div class="annot">
+        <div class="annot__head">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="annot__file">TranslatingDialogUiConfig</span>
+          <button class="annot__copy">Copy</button>
+        </div>
+        <div class="annot__row annot__row--head">
+          <div>Thuộc tính</div>
+          <div>Ý nghĩa &amp; khi nào dùng</div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundRes: Int?</div>
+          <div class="annot__note"><p>Nền của hộp thoại.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">title / titleRes / titleColor / titleColorRes</div>
+          <div class="annot__note"><p>Tiêu đề hộp thoại, ví dụ "Đang dịch…".</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">content / contentRes / contentColor / contentColorRes</div>
+          <div class="annot__note"><p>Nội dung thông báo bên dưới tiêu đề.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">progressTint / progressTintRes</div>
+          <div class="annot__note"><p>Màu của vòng xoay loading trong hộp thoại.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 Ghi đè màu không cần truyền config</p>
+        <p>
+          Nếu bạn chỉ muốn đổi màu mà không cần tuỳ biến cấu trúc, hãy override resource cùng tên
+          trong app — thư viện đọc resource của app trước:
+        </p>
+        <div class="kv">
+          <div class="kv__item"><div class="kv__label">Nền chính</div><div class="kv__value">ads_bg_dark</div></div>
+          <div class="kv__item"><div class="kv__label">Màu chủ đạo</div><div class="kv__value">ads_primary</div></div>
+          <div class="kv__item"><div class="kv__label">Tiêu đề WCB</div><div class="kv__value">ads_welcome_back_title_color</div></div>
+          <div class="kv__item"><div class="kv__label">Chữ nút WCB</div><div class="kv__value">ads_welcome_back_btn_continue_text</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #resume ======================= -->
+  <section class="section reveal" id="resume">
+    <p class="section__eyebrow">Bước 6</p>
+    <h2 class="section__title">App Open &amp; WelcomeBack khi resume</h2>
+    <p class="section__lead">
+      Thư viện tự lắng nghe vòng đời process để mở màn <code>WelcomeBackActivity</code> khi người dùng
+      quay lại app từ background. Bạn không cần tự đăng ký <code>ActivityLifecycleCallbacks</code> —
+      nó đã được làm sẵn trong <code>AdsFlowApplication</code>.
+    </p>
+
+    <div class="section__body">
+      <h3>6.1. 6 Điều kiện kích hoạt WelcomeBack khi Resume</h3>
+      <p>
+        Trong <code>onStart()</code> của process lifecycle, thư viện kiểm tra tuần tự 6 điều kiện và dừng ngay khi gặp
+        điều kiện không thỏa mãn:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Điều kiện kiểm tra</th><th>Ý nghĩa &amp; Cách xử lý</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><code>shouldShowWelcomeBackOnResume()</code></td><td>Đọc cờ <code>AdCommon.isShowResume</code>. Nếu <code>false</code> thì dừng ngay.</td></tr>
+            <tr><td>2</td><td><code>currentActivity != null</code></td><td>Phải có ít nhất một Activity đang sống trong app.</td></tr>
+            <tr><td>3</td><td><code>AdCommon.isShowingAd == false</code></td><td>Không có quảng cáo Inter/Reward/AppOpen nào đang hiển thị đè lên màn hình.</td></tr>
+            <tr><td>4</td><td><code>!activity.name.startsWith("com.google.android.gms.ads")</code></td><td>Tự động bỏ qua các Activity nội bộ của Google AdMob (khi user bấm vào ad).</td></tr>
+            <tr><td>5</td><td>Activity không nằm trong <code>excludedFromWelcomeBack()</code></td><td>Mặc định loại trừ: Splash, NativeFull, NoInternet, WelcomeBack. App có thể thêm LanguageStart, Paywall...</td></tr>
+            <tr><td>6</td><td><code>welcomeBackActivity() != null &amp;&amp; != currentActivity</code></td><td>Đã xác định màn WelcomeBack và màn hình hiện tại không phải là chính nó.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note note--danger">
+        <p class="note__title">🐛 Cạm bẫy: isShowingAd bị kẹt</p>
+        <p>
+          <code>AdCommon.isShowingAd</code> là cờ global. Nếu một activity nào đó bật nó lên mà quên
+          tắt khi đóng ad, điều kiện số 3 ở trên sẽ chặn WelcomeBack <b>vĩnh viễn</b>.
+          Khi gọi quảng cáo thủ công, hãy luôn đảm bảo reset <code>AdCommon.isShowingAd = false</code> trong callback đóng ad hoặc onDestroy.
+        </p>
+      </div>
+
+      <h3>6.2. Hướng dẫn Bật / Tắt Resume Ads linh hoạt</h3>
+      <p>
+        Để kiểm soát việc hiển thị quảng cáo Resume (WelcomeBack &amp; AppOpen), bạn có thể sử dụng các cách sau:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">Cách bật/tắt cờ Resume Ads</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.core.common.AdCommon
+
+<span class="tok-cmt">// Cách 1: Dùng trực tiếp qua AdCommon</span>
+AdCommon.isShowResume = <span class="tok-kw">false</span> <span class="tok-cmt">// Tắt</span>
+AdCommon.isShowResume = <span class="tok-kw">true</span>  <span class="tok-cmt">// Bật</span>
+
+<span class="tok-cmt">// Cách 2: Dùng helper function onAppOpen() / offAppOpen()</span>
+AdCommon.offAppOpen() <span class="tok-cmt">// Tắt Resume Ad</span>
+AdCommon.onAppOpen()  <span class="tok-cmt">// Bật lại Resume Ad</span>
+
+<span class="tok-cmt">// Cách 3: Qua shortcut trong Activity (kế thừa từ AdsFlowApplication)</span>
+(application <span class="tok-kw">as</span> AdsFlowApplication).isShowResume = <span class="tok-kw">false</span></code></pre>
+      </div>
+
+      <h3>6.3. Code mẫu 2 nút Test Bật / Tắt Resume Ads tại MainActivity</h3>
+      <p>
+        Dưới đây là cách triển khai 2 nút bấm trên giao diện <code>MainActivity</code> để QA/Tester dễ dàng kiểm tra luồng Resume:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> android.os.Bundle
+<span class="tok-kw">import</span> android.widget.Button
+<span class="tok-kw">import</span> android.widget.TextView
+<span class="tok-kw">import</span> androidx.appcompat.app.AppCompatActivity
+<span class="tok-kw">import</span> com.ignova.adsflow.core.common.AdCommon
+
+<span class="tok-kw">class</span> <span class="tok-typ">MainActivity</span> : <span class="tok-typ">AppCompatActivity</span>() {
+
+    <span class="tok-kw">override fun</span> onCreate(savedInstanceState: Bundle?) {
+        <span class="tok-kw">super</span>.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        <span class="tok-kw">val</span> tvStatus = findViewById&lt;TextView&gt;(R.id.tvResumeStatus)
+        <span class="tok-kw">val</span> btnEnable = findViewById&lt;Button&gt;(R.id.btnEnableResumeAd)
+        <span class="tok-kw">val</span> btnDisable = findViewById&lt;Button&gt;(R.id.btnDisableResumeAd)
+
+        <span class="tok-kw">fun</span> updateStatus() {
+            tvStatus.text = <span class="tok-str">"Trạng thái Ads Resume: ${if (AdCommon.isShowResume) "BẬT" else "TẮT"}"</span>
+        }
+
+        btnEnable.setOnClickListener {
+            AdCommon.isShowResume = <span class="tok-kw">true</span>
+            updateStatus()
+        }
+
+        btnDisable.setOnClickListener {
+            AdCommon.isShowResume = <span class="tok-kw">false</span>
+            updateStatus()
+        }
+
+        updateStatus()
+    }
+}</code></pre>
+      </div>
+
+      <h3>6.4. Chặn theo màn hình (excludedFromWelcomeBack)</h3>
+      <p>
+        Trong các luồng nhạy cảm như màn thanh toán IAP, màn nhập thẻ tín dụng, màn xem video hoặc <code>LanguageStartActivity</code>, bạn không muốn WelcomeBack đè lên khi người dùng lỡ tay thoát app. Chỉ cần khai báo trong <code>MyApplication</code>:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">override fun</span> excludedFromWelcomeBack(): <span class="tok-typ">Set</span>&lt;<span class="tok-typ">Class</span>&lt;<span class="tok-kw">out</span> Activity&gt;&gt; = setOf(
+    SplashActivity::class.java,
+    LanguageStartActivity::class.java, <span class="tok-cmt">// Chặn khi đang chọn ngôn ngữ</span>
+    NativeFullActivity::class.java,
+    NoInternetActivity::class.java,
+    WelcomeBackActivity::class.java,
+    PaywallActivity::class.java       <span class="tok-cmt">// Chặn khi đang mua IAP</span>
+)</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #language ======================= -->
+  <section class="section reveal" id="language">
+    <p class="section__eyebrow">Bước 7</p>
+    <h2 class="section__title">Đa ngôn ngữ</h2>
+    <p class="section__lead">
+      Thư viện hiển thị màn chọn ngôn ngữ ngay sau Splash (lần đầu), rồi chuyển ngôn ngữ hệ thống
+      của thiết bị. Trạng thái được lưu trong <code>SharedPreferences</code> tên
+      <code>ignova_ads_flow_pref</code>.
+    </p>
+
+    <div class="section__body">
+      <h3>7.1. Đọc ngôn ngữ đang chọn</h3>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.flow.AdsFlow
+
+<span class="tok-kw">val</span> langCode = AdsFlow.getSelectedLanguage(this)   <span class="tok-cmt">// mặc định "en"</span>
+<span class="tok-kw">val</span> locale = <span class="tok-typ">Locale</span>(langCode)
+
+<span class="tok-kw">val</span> config = resources.configuration
+config.setLocale(locale)
+<span class="tok-typ">Locale</span>.setDefault(locale)
+resources.updateConfiguration(config, resources.displayMetrics)</code></pre>
+      </div>
+
+      <h3>7.2. Bỏ qua luồng chọn ngôn ngữ</h3>
+      <p>
+        Nếu app của bạn đã có cơ chế đa ngôn ngữ riêng, bạn có thể đánh dấu "đã xong" để thư viện bỏ
+        qua màn này:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.flow.AdsFlow
+
+<span class="tok-cmt">// Bỏ qua luồng chọn ngôn ngữ</span>
+AdsFlow.setLanguageDone(this, <span class="tok-kw">true</span>)
+
+<span class="tok-cmt">// Bỏ qua luồng onboarding (nếu app tự làm)</span>
+AdsFlow.setIntroDone(this, <span class="tok-kw">true</span>)</code></pre>
+      </div>
+
+      <h3>7.3. Bảng API</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Hàm</th><th>Trả về / Nhận</th><th>Dùng để làm gì</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>AdsFlow.isLanguageDone(ctx)</code></td><td><code>Boolean</code></td><td>Kiểm tra user đã qua màn chọn ngôn ngữ chưa</td></tr>
+            <tr><td><code>AdsFlow.setLanguageDone(ctx, true)</code></td><td>—</td><td>Đánh dấu đã xong, lần sau bỏ qua màn</td></tr>
+            <tr><td><code>AdsFlow.isIntroDone(ctx)</code></td><td><code>Boolean</code></td><td>Kiểm tra user đã xem onboarding chưa</td></tr>
+            <tr><td><code>AdsFlow.setIntroDone(ctx, true)</code></td><td>—</td><td>Đánh dấu đã xem xong</td></tr>
+            <tr><td><code>AdsFlow.getSelectedLanguage(ctx)</code></td><td><code>String</code> — mã ngôn ngữ</td><td>Đọc ngôn ngữ đang chọn, mặc định <code>"en"</code></td></tr>
+            <tr><td><code>AdsFlow.setSelectedLanguage(ctx, "vi")</code></td><td>—</td><td>Lưu ngôn ngữ người dùng chọn</td></tr>
+            <tr><td><code>AdsFlow.setIntroPages(pages)</code></td><td>—</td><td>Đổi danh sách trang onboarding lúc runtime</td></tr>
+            <tr><td><code>AdsFlow.getIntroPages()</code></td><td><code>List&lt;IntroPageItem&gt;?</code></td><td>Đọc danh sách trang onboarding đang dùng</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>7.4. Tự điều hướng trong flow</h3>
+      <p>
+        Nếu bạn cần điều hướng tới một màn riêng từ trong flow, dùng <code>AdsFlow.navigate()</code>
+        thay vì <code>Intent</code> cứng — thư viện sẽ ghi log và xử lý fallback:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Hàm</th><th>Ý nghĩa</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>navigate(activity, key, bundle, flags, fallbackClass, clearTask)</code></td><td>Chuyển tới Activity đã map cho <code>key</code>. Trả về <code>true</code> nếu thành công</td></tr>
+            <tr><td><code>navigateAndFinish(activity, key, ...)</code></td><td>Chuyển màn rồi <code>finish()</code> activity hiện tại — chỉ finish khi chuyển thành công</td></tr>
+            <tr><td><code>navigateToTarget(activity, bundle)</code></td><td>Về màn MAIN và gọi <code>onFlowCompleted</code></td></tr>
+            <tr><td><code>resolveTarget(key)</code></td><td>Lấy Activity class đã map cho key, <code>null</code> nếu chưa map</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #iab ======================= -->
+  <section class="section reveal" id="iab">
+    <p class="section__eyebrow">Bước 8</p>
+    <h2 class="section__title">Tắt quảng cáo (In-App Purchase)</h2>
+    <p class="section__lead">
+      Thư viện có sẵn cơ chế tắt quảng cáo ở tầng lõi. Override
+      <code>defaultAdSuppressor()</code> và trả về <code>true</code> khi người dùng đã mua gói — mọi
+      định dạng quảng cáo sẽ tự động bị bỏ qua, <b>không cần</b> thêm <code>if</code> ở từng màn
+      hình và không phát sinh request mạng nào.
+    </p>
+
+    <div class="section__body">
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> android.app.Activity
+
+<span class="tok-kw">class</span> <span class="tok-typ">MyApplication</span> : <span class="tok-typ">AdsFlowApplication</span>() {
+
+    <span class="tok-kw">private val</span> premiumPrefs by lazy {
+        getSharedPreferences(<span class="tok-str">"premium"</span>, MODE_PRIVATE)
+    }
+
+    <span class="tok-cmt">/** Trả về true để tắt toàn bộ quảng cáo. */</span>
+    <span class="tok-kw">override fun</span> defaultAdSuppressor(): (<span class="tok-kw">()</span> -&gt; <span class="tok-typ">Boolean</span>)? = {
+        premiumPrefs.getBoolean(<span class="tok-str">"is_no_ads"</span>, <span class="tok-kw">false</span>)
+    }
+
+    <span class="tok-cmt">// Bật/tắt ngay khi giao dịch hoàn tất</span>
+    <span class="tok-kw">fun</span> setNoAds(enabled: <span class="tok-typ">Boolean</span>) {
+        premiumPrefs.edit().putBoolean(<span class="tok-str">"is_no_ads"</span>, enabled).apply()
+    }
+}</code></pre>
+      </div>
+
+      <p>Gọi từ nơi xác nhận giao dịch thành công:</p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">PurchaseManager.kt</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">fun</span> onPurchaseSuccess() {
+    (<span class="tok-kw">applicationContext</span> <span class="tok-kw">as</span> MyApplication).setNoAds(<span class="tok-kw">true</span>)
+    <span class="tok-cmt">// Không cần restart — các màn hình sau sẽ bỏ qua quảng cáo</span>
+}
+
+<span class="tok-kw">fun</span> onSubscriptionExpired() {
+    (<span class="tok-kw">applicationContext</span> <span class="tok-kw">as</span> MyApplication).setNoAds(<span class="tok-kw">false</span>)
+}</code></pre>
+      </div>
+
+      <p>Để kiểm tra trạng thái khi cần ẩn/hiện nút "Mua VIP" hoặc container quảng cáo:</p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.core.common.AdCommon
+
+<span class="tok-cmt">// true = người dùng đã mua gói, quảng cáo đang bị tắt</span>
+<span class="tok-kw">val</span> noAds = AdCommon.isAdSuppressed()
+
+<span class="tok-kw">if</span> (noAds) {
+    binding.btnRemoveAds.visibility = View.GONE
+    binding.frNative.visibility = View.GONE
+} <span class="tok-kw">else</span> {
+    binding.btnRemoveAds.visibility = View.VISIBLE
+}</code></pre>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 Khi suppression = true</p>
+        <ul>
+          <li>Các manager bỏ qua load/show và gọi callback tiếp theo ngay lập tức — luồng app không bị kẹt.</li>
+          <li>Native ad bị <b>ẩn container và xoá toàn bộ view con</b>, không để lại khoảng trống.</li>
+          <li>Mọi lần bị chặn đều ghi log dạng <code>*_suppressed</code> để bạn đối soát.</li>
+        </ul>
+      </div>
+
+      <div class="note note--warn">
+        <p class="note__title">⚠️ Cũng dùng được cho VPN / chế độ debug</p>
+        <p>
+          <code>defaultAdSuppressor()</code> không chỉ dành cho IAP. Trả về <code>true</code> khi app
+          đang chạy ở chế độ debug, hoặc khi phát hiện VPN — lưu lượng người dùng được bảo vệ và bạn
+          không tốn request quảng cáo nào.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #ads-api ======================= -->
+  <section class="section reveal" id="ads-api">
+    <p class="section__eyebrow">Bước 9</p>
+    <h2 class="section__title">Các loại quảng cáo từ MainActivity trở đi (Chuẩn hóa 5 Manager)</h2>
+    <p class="section__lead">
+      Từ <code>MainActivity</code> trở đi, app quản lý việc nạp và hiển thị quảng cáo qua 5 Manager chuyên biệt:
+      <code>AdNativeManager</code>, <code>AdBannerManager</code>, <code>AdInterManager</code>, <code>AdOpenManager</code>, <code>AdRewardManager</code>.
+      Tất cả 5 Manager đều kế thừa từ kiến trúc thống nhất <b>BaseAdPlacement</b> và cung cấp <b>đúng 4 hàm tường minh</b> giúp tầng App dễ nhớ, dễ dùng và nhất quán 100%.
+    </p>
+
+    <div class="section__body">
+      <div class="note">
+        <p class="note__title">💎 4 Hàm chuẩn hóa duy nhất trên cả 5 Manager</p>
+        <p>App developer chỉ cần nhớ 4 phương thức này khi gọi bất kỳ loại quảng cáo nào:</p>
+        <ul>
+          <li><b><code>loadOnly(...)</code></b>: Preload quảng cáo vào bộ nhớ đệm (Placement) bằng 1 Ad Unit ID, sẵn sàng show sau với độ trễ bằng 0.</li>
+          <li><b><code>loadAndShow(...)</code></b>: Tải về và tự động hiển thị ngay khi nạp xong bằng 1 Ad Unit ID.</li>
+          <li><b><code>loadOnlyList(...)</code></b>: Preload theo danh sách Ad Unit ID dự phòng (Cascade fallback).</li>
+          <li><b><code>loadAndShowListId(...)</code></b>: Tải và hiển thị ngay theo danh sách Ad Unit ID dự phòng.</li>
+          <li><b><code>show(...)</code></b>: Hiển thị một Placement đã tải (hoặc dùng các alias trực quan: <code>showNative</code>, <code>showBanner</code>, <code>showInter</code>, <code>showReward</code>).</li>
+        </ul>
+      </div>
+
+      <div class="note note--success">
+        <p class="note__title">🚀 Điểm ưu việt của kiến trúc BaseAdPlacement (Production-Ready)</p>
+        <ul>
+          <li><b>Tối ưu Show Rate (Pending Show):</b> Nếu gọi <code>show()</code> khi quảng cáo vẫn đang tải (<code>LOADING</code>), Placement sẽ ghi nhớ cờ chờ và <i>tự động hiển thị ngay lập tức</i> khi quảng cáo nạp xong (miễn là Lifecycle đang ở trạng thái <code>STARTED</code> hoặc <code>RESUMED</code>). Không bao giờ bị miss impression!</li>
+          <li><b>Chống Memory Leak 100%:</b> Quản lý vòng đời qua <code>DefaultLifecycleObserver</code>, tự động unbind và cleanup tài nguyên khi Activity/Fragment bị <code>onDestroy</code>. Sử dụng <code>WeakReference</code> cho Activity và ViewGroup.</li>
+          <li><b>Không dùng Reflection:</b> Truy cập trực tiếp Producer strongly-typed, loại bỏ hoàn toàn mã phản chiếu (Java Reflection), tăng tốc độ thực thi và loại bỏ crash ẩn.</li>
+          <li><b>An toàn tuyệt đối (Fail-Safe):</b> Nếu cấu hình Remote Config tắt, key trống hoặc user là VIP/Suppressed, Manager tự động dọn sạch giao diện (GONE container) và kích hoạt callback tiếp tục (<code>onNextAction</code> / <code>onAdFailed</code>) để app không bao giờ bị đơ luồng.</li>
+        </ul>
+      </div>
+
+      <!-- 9.1 Banner -->
+      <h3>9.1. Banner Ad — AdBannerManager</h3>
+      <p>
+        Dùng cho Banner cố định ở đáy màn hình hoặc Collapsible Banner (tự động co giãn theo Remote Config). Key cấu hình chuẩn: <code>"banner_all"</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt — Đầy đủ 5 hàm chuẩn của AdBannerManager</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.manager.banner.AdBannerManager
+<span class="tok-kw">import</span> com.ignova.adsflow.manager.banner.BannerAdPlacement
+<span class="tok-kw">import</span> com.mobile.v1_ad_lib.ad_banner.BannerAdListener
+
+<span class="tok-kw">private var</span> bannerPlacement: <span class="tok-typ">BannerAdPlacement?</span> = <span class="tok-kw">null</span>
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 1. PRELOAD (loadOnly): Tải trước 1 ID vào bộ nhớ đệm Placement, chưa hiển thị</span>
+<span class="tok-cmt">// =========================================================================</span>
+bannerPlacement = AdBannerManager.loadOnly(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"banner_all"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 2. SHOW PRELOADED: Hiển thị Banner từ Placement đã nạp lên ViewGroup container</span>
+<span class="tok-cmt">// =========================================================================</span>
+AdBannerManager.show(
+    placement = bannerPlacement,
+    container = binding.frBannerContainer,
+    lifecycle = lifecycle
+)
+<span class="tok-cmt">// Hoặc dùng alias: AdBannerManager.showBanner(bannerPlacement, binding.frBannerContainer, lifecycle)</span>
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 3. LOAD &amp; SHOW (loadAndShow): Tải 1 ID và tự động hiển thị ngay khi nạp xong</span>
+<span class="tok-cmt">// =========================================================================</span>
+bannerPlacement = AdBannerManager.loadAndShow(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"banner_all"</span>,
+    container = binding.frBannerContainer,
+    listener = <span class="tok-kw">object</span> : <span class="tok-typ">BannerAdListener</span> {
+        <span class="tok-kw">override fun</span> onAdLoaded() { <span class="tok-cmt">/* Banner đã nạp và hiển thị */</span> }
+        <span class="tok-kw">override fun</span> onAdImpression() { <span class="tok-cmt">/* Ghi nhận lượt hiển thị */</span> }
+        <span class="tok-kw">override fun</span> onAdClicked() { <span class="tok-cmt">/* Người dùng click vào Banner */</span> }
+        <span class="tok-kw">override fun</span> onAdFailedToLoad() { <span class="tok-cmt">/* Tải thất bại */</span> }
+    }
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 4. PRELOAD LIST (loadOnlyList): Preload theo danh sách Waterfall ID dự phòng</span>
+<span class="tok-cmt">// =========================================================================</span>
+bannerPlacement = AdBannerManager.loadOnlyList(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"banner_all"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 5. LOAD &amp; SHOW LIST (loadAndShowListId): Tải danh sách Waterfall ID và hiện ngay</span>
+<span class="tok-cmt">// =========================================================================</span>
+bannerPlacement = AdBannerManager.loadAndShowListId(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"banner_all"</span>,
+    container = binding.frBannerContainer
+)
+
+<span class="tok-cmt">// (Tùy chọn) Giải phóng placement thủ công khi onDestroy nếu cần</span>
+<span class="tok-kw">override fun</span> onDestroy() {
+    AdBannerManager.clearPlacement(bannerPlacement)
+    <span class="tok-kw">super</span>.onDestroy()
+}</code></pre>
+      </div>
+
+      <!-- 9.2 Native -->
+      <h3>9.2. Native Ad — AdNativeManager</h3>
+      <p>
+        Quảng cáo tự nhiên hòa vào layout ứng dụng. Layout XML được ánh xạ tự động thông qua trường <code>ad_layout</code> trên Remote Config. Key cấu hình chuẩn: <code>"native_collapse_custom"</code> hoặc <code>"native_home"</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt — Đầy đủ 5 hàm chuẩn của AdNativeManager</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.manager.native.AdNativeManager
+<span class="tok-kw">import</span> com.ignova.adsflow.manager.native.NativeAdPlacement
+<span class="tok-kw">import</span> com.mobile.v1_ad_lib.ad_native.NativeAdListener
+
+<span class="tok-kw">private var</span> nativePlacement: <span class="tok-typ">NativeAdPlacement?</span> = <span class="tok-kw">null</span>
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 1. PRELOAD (loadOnly): Tải trước 1 ID vào Placement, không cần container</span>
+<span class="tok-cmt">// =========================================================================</span>
+nativePlacement = AdNativeManager.loadOnly(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"native_collapse_custom"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 2. SHOW PRELOADED: Hiển thị Native Ad từ Placement lên ViewGroup container</span>
+<span class="tok-cmt">// =========================================================================</span>
+AdNativeManager.show(
+    placement = nativePlacement,
+    container = binding.frNativeContainer,
+    lifecycle = lifecycle
+)
+<span class="tok-cmt">// Hoặc dùng alias: AdNativeManager.showNative(nativePlacement, binding.frNativeContainer, lifecycle)</span>
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 3. LOAD &amp; SHOW (loadAndShow): Tải 1 ID và hiển thị ngay kèm Callbacks chi tiết</span>
+<span class="tok-cmt">// =========================================================================</span>
+nativePlacement = AdNativeManager.loadAndShow(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"native_collapse_custom"</span>,
+    container = binding.frNativeContainer,
+    onAdLoaded = {
+        <span class="tok-cmt">// Đã nạp và render layout thành công</span>
+        binding.frNativeContainer.visibility = View.VISIBLE
+    },
+    onAdFailed = {
+        <span class="tok-cmt">// Tải thất bại hoặc bị chặn: container tự động ẩn sạch</span>
+        binding.frNativeContainer.visibility = View.GONE
+    },
+    onAdClosed = {
+        <span class="tok-cmt">// Người dùng bấm nút tắt quảng cáo</span>
+    },
+    listener = <span class="tok-kw">object</span> : <span class="tok-typ">NativeAdListener</span> {
+        <span class="tok-kw">override fun</span> onAdImpression() { <span class="tok-cmt">/* Ghi nhận lượt hiển thị */</span> }
+        <span class="tok-kw">override fun</span> onAdClicked() { <span class="tok-cmt">/* Người dùng click vào ad */</span> }
+    }
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 4. PRELOAD LIST (loadOnlyList): Preload theo danh sách Waterfall ID dự phòng</span>
+<span class="tok-cmt">// =========================================================================</span>
+nativePlacement = AdNativeManager.loadOnlyList(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"native_collapse_custom"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 5. LOAD &amp; SHOW LIST (loadAndShowListId): Tải danh sách Waterfall ID và hiện ngay</span>
+<span class="tok-cmt">// =========================================================================</span>
+nativePlacement = AdNativeManager.loadAndShowListId(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"native_collapse_custom"</span>,
+    container = binding.frNativeContainer
+)
+
+<span class="tok-cmt">// (Tùy chọn) Giải phóng placement khi onDestroy</span>
+<span class="tok-kw">override fun</span> onDestroy() {
+    AdNativeManager.clearPlacement(nativePlacement)
+    <span class="tok-kw">super</span>.onDestroy()
+}</code></pre>
+      </div>
+
+      <!-- 9.3 Interstitial -->
+      <h3>9.3. Interstitial Ad — AdInterManager</h3>
+      <p>
+        Quảng cáo xen kẽ toàn màn hình. Tự động kiểm tra khoảng thời gian tối thiểu giữa 2 lần hiển thị (<code>interval_between_interstitial</code>) để chống spam quảng cáo. Key cấu hình chuẩn: <code>"inter_home"</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt — Đầy đủ 5 hàm chuẩn của AdInterManager</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.manager.inter.AdInterManager
+<span class="tok-kw">import</span> com.ignova.adsflow.manager.inter.InterAdPlacement
+<span class="tok-kw">import</span> com.mobile.v1_ad_lib.ad_interstitial.InterstitialAdListener
+
+<span class="tok-kw">private var</span> interPlacement: <span class="tok-typ">InterAdPlacement?</span> = <span class="tok-kw">null</span>
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 1. PRELOAD (loadOnly): Nạp trước 1 ID vào bộ nhớ đệm (onCreate hoặc trước khi cần)</span>
+<span class="tok-cmt">// =========================================================================</span>
+interPlacement = AdInterManager.loadOnly(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"inter_home"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 2. SHOW PRELOADED: Hiển thị Interstitial Ad từ Placement khi người dùng bấm nút</span>
+<span class="tok-cmt">// (Có cơ chế Pending Show: Nếu ad đang load, placement tự chờ loaded rồi hiển thị ngay)</span>
+<span class="tok-cmt">// =========================================================================</span>
+binding.btnNextScreen.setOnClickListener {
+    AdInterManager.show(
+        placement = interPlacement,
+        activity = <span class="tok-kw">this</span>,
+        lifecycle = lifecycle,
+        onNextAction = {
+            <span class="tok-cmt">// ⚠️ QUAN TRỌNG: Luôn đặt logic chuyển màn trong callback này!</span>
+            navigateToNextScreen()
+        }
+    )
+    <span class="tok-cmt">// Hoặc dùng alias: AdInterManager.showInter(interPlacement, this, lifecycle, onNextAction)</span>
+}
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 3. LOAD &amp; SHOW (loadAndShow): Tải 1 ID và hiển thị ngay toàn màn hình</span>
+<span class="tok-cmt">// =========================================================================</span>
+binding.btnAction.setOnClickListener {
+    AdInterManager.loadAndShow(
+        context = <span class="tok-kw">this</span>,
+        lifecycle = lifecycle,
+        keyName = <span class="tok-str">"inter_home"</span>,
+        onNextAction = {
+            <span class="tok-cmt">// Được gọi khi: ad tắt, tải fail, hoặc chưa hết khoảng cách interval</span>
+            continueUserAction()
+        },
+        listener = <span class="tok-kw">object</span> : <span class="tok-typ">InterstitialAdListener</span> {
+            <span class="tok-kw">override fun</span> requireActivityForLoadAndShowAd(): Activity = <span class="tok-kw">this@MainActivity</span>
+            <span class="tok-kw">override fun</span> onAdShowedFullScreenContent() { <span class="tok-cmt">/* Bắt đầu hiện toàn màn hình */</span> }
+            <span class="tok-kw">override fun</span> onAdDismissedFullScreenContent() { <span class="tok-cmt">/* Ad đã đóng */</span> }
+            <span class="tok-kw">override fun</span> onAdFailedToShow() { <span class="tok-cmt">/* Không thể hiển thị */</span> }
+        }
+    )
+}
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 4. PRELOAD LIST (loadOnlyList): Preload theo danh sách Waterfall ID dự phòng</span>
+<span class="tok-cmt">// =========================================================================</span>
+interPlacement = AdInterManager.loadOnlyList(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"inter_home"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 5. LOAD &amp; SHOW LIST (loadAndShowListId): Tải danh sách Waterfall ID và hiện ngay</span>
+<span class="tok-cmt">// =========================================================================</span>
+AdInterManager.loadAndShowListId(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"inter_home"</span>,
+    onNextAction = {
+        continueUserAction()
+    }
+)
+
+<span class="tok-cmt">// (Tùy chọn) Giải phóng placement khi onDestroy</span>
+<span class="tok-kw">override fun</span> onDestroy() {
+    AdInterManager.clearPlacement(interPlacement)
+    <span class="tok-kw">super</span>.onDestroy()
+}</code></pre>
+      </div>
+
+      <!-- 9.4 Rewarded Video -->
+      <h3>9.4. Rewarded Video Ad — AdRewardManager</h3>
+      <p>
+        Quảng cáo video trả thưởng. <b>Lưu ý an toàn:</b> Chỉ trao quyền lợi / thưởng cho người dùng bên trong callback <code>onUserEarnedReward</code>. Tuyệt đối không trao thưởng trong <code>onNextAction</code> vì người dùng có thể đóng video sớm mà chưa xem hết. Key cấu hình chuẩn: <code>"reward_home"</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt — Đầy đủ 5 hàm chuẩn của AdRewardManager</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.manager.reward.AdRewardManager
+<span class="tok-kw">import</span> com.ignova.adsflow.manager.reward.RewardAdPlacement
+
+<span class="tok-kw">private var</span> rewardPlacement: <span class="tok-typ">RewardAdPlacement?</span> = <span class="tok-kw">null</span>
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 1. PRELOAD (loadOnly): Tải trước 1 ID video thưởng vào bộ nhớ đệm</span>
+<span class="tok-cmt">// =========================================================================</span>
+rewardPlacement = AdRewardManager.loadOnly(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"reward_home"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 2. SHOW PRELOADED: Hiển thị Video trả thưởng từ Placement khi người dùng bấm nút nhận quà</span>
+<span class="tok-cmt">// =========================================================================</span>
+binding.btnClaimReward.setOnClickListener {
+    AdRewardManager.show(
+        placement = rewardPlacement,
+        activity = <span class="tok-kw">this</span>,
+        lifecycle = lifecycle,
+        onUserEarnedReward = {
+            <span class="tok-cmt">// ✅ CHỈ TRAO THƯỞNG TẠI ĐÂY (khi user đã xem đủ điều kiện)</span>
+            addCoinsToUserAccount(<span class="tok-num">20</span>)
+        },
+        onNextAction = {
+            <span class="tok-cmt">// Video đóng (kể cả đã nhận thưởng hoặc tắt sớm)</span>
+            updateUiAfterVideoDismissed()
+        }
+    )
+    <span class="tok-cmt">// Hoặc dùng alias: AdRewardManager.showReward(rewardPlacement, this, lifecycle, onUserEarnedReward, onNextAction)</span>
+}
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 3. LOAD &amp; SHOW (loadAndShow): Tải 1 ID và tự động hiển thị ngay video thưởng</span>
+<span class="tok-cmt">// =========================================================================</span>
+binding.btnWatchVideoDirect.setOnClickListener {
+    rewardPlacement = AdRewardManager.loadAndShow(
+        context = <span class="tok-kw">this</span>,
+        lifecycle = lifecycle,
+        keyName = <span class="tok-str">"reward_home"</span>,
+        onUserEarnedReward = {
+            <span class="tok-cmt">// ✅ Trao thưởng an toàn ngay tại đây</span>
+            addCoinsToUserAccount(<span class="tok-num">50</span>)
+        },
+        onNextAction = {
+            <span class="tok-cmt">// Video kết thúc hoặc đóng</span>
+        }
+    )
+}
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 4. PRELOAD LIST (loadOnlyList): Preload video thưởng theo danh sách Waterfall ID</span>
+<span class="tok-cmt">// =========================================================================</span>
+rewardPlacement = AdRewardManager.loadOnlyList(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"reward_home"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 5. LOAD &amp; SHOW LIST (loadAndShowListId): Tải danh sách Waterfall ID và hiện ngay</span>
+<span class="tok-cmt">// =========================================================================</span>
+rewardPlacement = AdRewardManager.loadAndShowListId(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"reward_home"</span>,
+    onUserEarnedReward = {
+        addCoinsToUserAccount(<span class="tok-num">50</span>)
+    },
+    onNextAction = {
+        <span class="tok-cmt">// Tiếp tục tác vụ sau khi đóng video</span>
+    }
+)
+
+<span class="tok-cmt">// (Tùy chọn) Giải phóng placement khi onDestroy</span>
+<span class="tok-kw">override fun</span> onDestroy() {
+    AdRewardManager.clearPlacement(rewardPlacement)
+    <span class="tok-kw">super</span>.onDestroy()
+}</code></pre>
+      </div>
+
+      <!-- 9.5 App Open -->
+      <h3>9.5. App Open Ad — AdOpenManager</h3>
+      <p>
+        Quảng cáo mở ứng dụng toàn màn hình hoặc Welcome Back khi người dùng mở lại app từ background. Key cấu hình chuẩn: <code>"app_open_wcb"</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MainActivity.kt — Đầy đủ 5 hàm chuẩn của AdOpenManager</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.manager.appopen.AdOpenManager
+<span class="tok-kw">import</span> com.ignova.adsflow.manager.appopen.AppOpenAdPlacement
+
+<span class="tok-kw">private var</span> appOpenPlacement: <span class="tok-typ">AppOpenAdPlacement?</span> = <span class="tok-kw">null</span>
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 1. PRELOAD (loadOnly): Nạp trước 1 ID App Open vào bộ nhớ đệm</span>
+<span class="tok-cmt">// =========================================================================</span>
+appOpenPlacement = AdOpenManager.loadOnly(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"app_open_wcb"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 2. SHOW PRELOADED: Hiển thị App Open Ad từ Placement đã nạp</span>
+<span class="tok-cmt">// =========================================================================</span>
+AdOpenManager.show(
+    placement = appOpenPlacement,
+    activity = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    onNextAction = {
+        <span class="tok-cmt">// Tiếp tục tác vụ sau khi App Open ad đóng</span>
+        resumeAppLogic()
+    }
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 3. LOAD &amp; SHOW (loadAndShow): Tải 1 ID và tự động hiển thị ngay</span>
+<span class="tok-cmt">// =========================================================================</span>
+appOpenPlacement = AdOpenManager.loadAndShow(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"app_open_wcb"</span>,
+    onNextAction = {
+        <span class="tok-cmt">// Tiếp tục tác vụ sau khi ad đóng hoặc nạp thất bại</span>
+        resumeAppLogic()
+    }
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 4. PRELOAD LIST (loadOnlyList): Preload theo danh sách Waterfall ID dự phòng</span>
+<span class="tok-cmt">// =========================================================================</span>
+appOpenPlacement = AdOpenManager.loadOnlyList(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"app_open_wcb"</span>
+)
+
+<span class="tok-cmt">// =========================================================================</span>
+<span class="tok-cmt">// 5. LOAD &amp; SHOW LIST (loadAndShowListId): Tải danh sách Waterfall ID và hiện ngay</span>
+<span class="tok-cmt">// =========================================================================</span>
+appOpenPlacement = AdOpenManager.loadAndShowListId(
+    context = <span class="tok-kw">this</span>,
+    lifecycle = lifecycle,
+    keyName = <span class="tok-str">"app_open_wcb"</span>,
+    onNextAction = {
+        resumeAppLogic()
+    }
+)
+
+<span class="tok-cmt">// (Tùy chọn) Giải phóng placement khi onDestroy</span>
+<span class="tok-kw">override fun</span> onDestroy() {
+    AdOpenManager.clearPlacement(appOpenPlacement)
+    <span class="tok-kw">super</span>.onDestroy()
+}</code></pre>
+      </div>
+
+      <!-- 9.6 LoadMode -->
+      <h3>9.6. Bảng tổng hợp các chế độ LoadMode &amp; 4 Hàm chuẩn</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Hàm gọi trực tiếp</th><th>Enum AdLoadMode</th><th>Hành vi</th><th>Trường hợp nên dùng</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>loadAndShow(...)</code></td><td><code>LOAD_AND_SHOW</code></td><td>Tải về và lập tức hiển thị lên UI</td><td>Các nút bấm, sự kiện chuyển màn hình trực tiếp</td></tr>
+            <tr><td><code>loadOnly(...)</code></td><td><code>LOAD_ONLY</code></td><td>Chỉ tải vào bộ nhớ đệm (Preload), chưa hiện</td><td>Nạp sẵn ở đầu màn hình (onCreate) để mở sau không độ trễ</td></tr>
+            <tr><td><code>loadAndShowListId(...)</code></td><td><code>LOAD_AND_SHOW_LIST</code></td><td>Tải và hiện theo danh sách fallback ad units</td><td>Khi cấu hình nhiều ad unit id dự phòng theo thứ tự ưu tiên</td></tr>
+            <tr><td><code>loadOnlyList(...)</code></td><td><code>LOAD_ONLY_LIST</code></td><td>Preload theo danh sách fallback ad units</td><td>Chuẩn bị sẵn sàng nhiều ad unit dự phòng ở bộ nhớ đệm</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 9.7 DemoAdsActivity -->
+      <h3>9.7. Màn hình Demo Ads &amp; Real-time EventTracker Console (DemoAdsActivity)</h3>
+      <p>
+        Trong module <code>app</code> mẫu, thư viện cung cấp sẵn màn hình <code>DemoAdsActivity</code>
+        (mở trực tiếp bằng nút <b>"🚀 MỞ DEMO ADS (5 LOẠI ADS)"</b> trên <code>MainActivity</code>).
+        Màn hình này được thiết kế chuẩn Production phục vụ Dev &amp; QA kiểm thử tương tác thực tế với 5 loại quảng cáo.
+      </p>
+
+      <div class="note note--success">
+        <p class="note__title">🎯 Tính năng nổi bật của DemoAdsActivity</p>
+        <ul>
+          <li><b>Test độc lập 5 loại Ads:</b> Banner, Native (có container xem trước), Interstitial, Rewarded Video (có cộng coin thưởng), App Open.</li>
+          <li><b>Kiểm thử đủ 2 trạng thái:</b> Nút <code>[Preload]</code> (gọi <code>loadOnly</code>) → nút <code>[Show]</code> (gọi <code>show</code>) và nút <code>[Load &amp; Show]</code> (tải &amp; hiện ngay).</li>
+          <li><b>Khung Real-time Console Log ở dưới màn hình:</b> Tích hợp <code>TrackerEventListener</code> từ <code>AppTrackers</code>, hiển thị từng mili-giây mọi sự kiện Firebase EventTracker và callback trạng thái mà không cần cắm cáp xem Logcat!</li>
+          <li><b>Nút thao tác tiện ích:</b> Nút <i>"Xóa log"</i> dọn sạch console và tự động cuộn theo dòng log mới nhất.</li>
+        </ul>
+      </div>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">Cách đăng ký lắng nghe Real-time EventTracker trong App</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.core.tracker.AppTrackers
+<span class="tok-kw">import</span> com.ignova.adsflow.core.tracker.TrackerEventListener
+
+<span class="tok-kw">class</span> <span class="tok-typ">MyDebugActivity</span> : <span class="tok-typ">AppCompatActivity</span>() {
+
+    <span class="tok-kw">private val</span> trackerListener = <span class="tok-typ">TrackerEventListener</span> { name, bundle ->
+        <span class="tok-cmt">// Hứng mọi sự kiện tracking phát sinh từ ads_flow (load, impression, click, fail...)</span>
+        Log.d(<span class="tok-str">"TRACKER_EVENT"</span>, <span class="tok-str">"Event: $name | Params: $bundle"</span>)
+    }
+
+    <span class="tok-kw">override fun</span> onStart() {
+        <span class="tok-kw">super</span>.onStart()
+        AppTrackers.addEventListener(trackerListener)
+    }
+
+    <span class="tok-kw">override fun</span> onStop() {
+        AppTrackers.removeEventListener(trackerListener)
+        <span class="tok-kw">super</span>.onStop()
+    }
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #remote-config ======================= -->
+  <section class="section reveal" id="remote-config">
+    <p class="section__eyebrow">Bước 10</p>
+    <h2 class="section__title">Cấu hình Remote Config chuẩn</h2>
+    <p class="section__lead">
+      Toàn bộ quảng cáo và luồng điều hướng được điều khiển tập trung từ Firebase Remote Config — có thể tắt/bật, đổi ad unit ID,
+      đổi tần suất và thay layout mà không cần phát hành bản app mới. Thư viện tự động fetch và cache ngay khi vào Splash.
+    </p>
+
+    <div class="section__body">
+      <!-- 10.1. Cơ chế hoạt động & Nguyên tắc mapping -->
+      <h3>10.1. Cơ chế hoạt động &amp; Nguyên tắc mapping</h3>
+      <p>
+        Khi vào <code>SplashActivity</code>, thư viện gọi <code>IConfigRepository.getConfigObject&lt;T&gt;(key)</code>.
+        Dưới nền, thư viện dùng Gson để deserialize chuỗi JSON từ Remote Config thành các Data Class strongly-typed:
+        <code>NativeModel</code>, <code>InterModel</code>, <code>BannerModel</code>, <code>AppOpenModel</code>, <code>RewardModel</code>,
+        <code>ScreenLanguageStart</code>, <code>ScreenSplashModel</code>, <code>ScreenWelcomeBackModel</code>, <code>AdConfigModel</code>.
+      </p>
+
+      <div class="note note--danger">
+        <p class="note__title">🐛 Cảnh báo quan trọng về KeyName và Schema JSON</p>
+        <p>
+          Nếu Remote Config bị <b>sai chính tả tên key</b> hoặc chuỗi JSON bị <b>sai kiểu dữ liệu / cú pháp không hợp lệ</b>,
+          Gson sẽ trả về <code>null</code> hoặc đối tượng mặc định với <code>is_show = false</code> và danh sách ID rỗng.
+          Hệ quả: <b>Quảng cáo sẽ không tải và không hiển thị</b> mà không sinh lỗi crash, gây thất thoát doanh thu rất khó debug!
+        </p>
+      </div>
+
+      <!-- 10.2. Cơ chế Fallback Defaults Offline-First -->
+      <h3>10.2. Cơ chế Fallback Defaults khi mất mạng (Offline-First cho Thư viện)</h3>
+      <p>
+        Khi <code>ads_flow</code> được đóng gói thành thư viện độc lập (.aar), tầng app truyền file cấu hình mặc định (fallback)
+        để khi người dùng mở app không có mạng hoặc Firebase fetch thất bại, toàn bộ quảng cáo vẫn hiển thị mượt mà từ bộ defaults.
+        Thư viện áp dụng <b>3 lớp bảo vệ tự động (3-Layer Fallback)</b>:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Thứ tự</th><th>Lớp bảo vệ</th><th>Cơ chế hoạt động</th><th>Ưu tiên</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Lớp 1</b></td>
+              <td><b>Khai báo tường minh qua <code>AdsFlowConfig</code></b></td>
+              <td>App truyền <code>remoteConfigDefaultsRes = R.xml.remote_config_defaults</code> trong <code>MyApplication.configureFlow()</code>.</td>
+              <td><b>Cao nhất</b> (Khuyên dùng)</td>
+            </tr>
+            <tr>
+              <td><b>Lớp 2</b></td>
+              <td><b>Tự động phát hiện (Auto-detection Zero-config)</b></td>
+              <td>Nếu dev quên truyền ở Lớp 1, thư viện tự động dò tìm file <code>res/xml/remote_config_defaults.xml</code> trong package của App qua <code>getIdentifier()</code>.</td>
+              <td>Tự động nhận</td>
+            </tr>
+            <tr>
+              <td><b>Lớp 3</b></td>
+              <td><b>Built-in Defaults trong <code>ads_flow</code></b></td>
+              <td>Thư viện điền sẵn bộ JSON mẫu và Test Ad Units chuẩn trong file XML của thư viện, đảm bảo không bao giờ bị null config.</td>
+              <td>Dự phòng cuối cùng</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt — Truyền Remote Config Defaults từ tầng App</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">class</span> <span class="tok-typ">MyApplication</span> : <span class="tok-typ">AdsFlowApplication</span>() {
+
+    <span class="tok-kw">override fun</span> configureFlow(): AdsFlowConfig = AdsFlowConfig(
+        <span class="tok-cmt">// ✅ 1. Truyền file XML defaults của tầng app (làm fallback khi fetch remote lỗi):</span>
+        remoteConfigDefaultsRes = R.xml.remote_config_defaults,
+
+        activityMap = mapOf(
+            FlowTarget.MAIN to MainActivity::class.java,
+            FlowTarget.WELCOME_BACK to WelcomeBackActivity::class.java
+        ),
+        isOnboardingOnce = <span class="tok-kw">false</span>,
+        <span class="tok-cmt">// ... UI configs</span>
+    )
+
+    <span class="tok-cmt">// Hoặc cách 2: override hook riêng trong AdsFlowApplication</span>
+    <span class="tok-kw">override fun</span> remoteConfigDefaultsRes(): Int? = R.xml.remote_config_defaults
+}</code></pre>
+      </div>
+
+      <!-- 10.3. Bảng quy chuẩn KeyName theo màn hình -->
+      <h3>10.3. Bảng quy chuẩn KeyName theo từng màn hình (Splash → Intro → Home)</h3>
+      <p>
+        Dưới đây là danh mục toàn bộ các key Remote Config chuẩn được định nghĩa trong <code>AdRemoteConfigKey.kt</code>,
+        phân nhóm chi tiết theo từng màn hình và tính năng:
+      </p>
+
+      <!-- Global -->
+      <details class="keys" open>
+        <summary>1. Cấu hình Toàn cục &amp; Debug (Global Settings)</summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Remote Config Key</th><th>Data Class</th><th>Kiểu</th><th>Ý nghĩa &amp; Vai trò</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>app_config_model</code></td>
+                <td><code>AdConfigModel</code></td>
+                <td>JSON Object</td>
+                <td>Cấu hình thời gian giãn cách giữa các lần hiển thị Interstitial và danh sách version chặn ads.</td>
+              </tr>
+              <tr>
+                <td><code>admob_test_devices</code></td>
+                <td><code>List&lt;String&gt;</code></td>
+                <td>JSON Array</td>
+                <td>Danh sách Test Device ID (ví dụ <code>["25916D0464278F3B0870DFBC38F1E777"]</code>) để nhận ad test an toàn.</td>
+              </tr>
+              <tr>
+                <td><code>enable_ad_inspector_feature</code></td>
+                <td><code>Boolean</code></td>
+                <td>Boolean</td>
+                <td>Bật/tắt Google Mobile Ads Inspector (lắc máy hoặc gọi mở công cụ kiểm tra ad adapter).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- Splash -->
+      <details class="keys" open>
+        <summary>2. Màn hình Splash (SplashActivity)</summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Remote Config Key</th><th>Data Class</th><th>Ý nghĩa &amp; Vị trí hiển thị</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>screen_splash</code></td>
+                <td><code>ScreenSplashModel</code></td>
+                <td>Cấu hình hiển thị màn Splash (ẩn navigation bar, animation chữ, màn tiếp theo).</td>
+              </tr>
+              <tr>
+                <td><code>native_splash</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native hiển thị inline trực tiếp trên layout của màn hình Splash.</td>
+              </tr>
+              <tr>
+                <td><code>inter_splash</code></td>
+                <td><code>InterModel</code></td>
+                <td>Quảng cáo Interstitial toàn màn hình tải và hiển thị tại cuối màn Splash.</td>
+              </tr>
+              <tr>
+                <td><code>banner_splash</code></td>
+                <td><code>BannerModel</code></td>
+                <td>Quảng cáo Banner hiển thị dưới chân màn hình Splash (khi không dùng Native).</td>
+              </tr>
+              <tr>
+                <td><code>app_open_splash</code></td>
+                <td><code>AppOpenModel</code></td>
+                <td>Quảng cáo App Open mở đầu tại Splash (thay thế hoặc song hành với Interstitial).</td>
+              </tr>
+              <tr>
+                <td><code>native_after_inter_splash</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native toàn màn hình hiển thị dự phòng/tiếp nối sau khi tắt Interstitial Splash.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- Language -->
+      <details class="keys" open>
+        <summary>3. Màn hình Chọn Ngôn Ngữ (LanguageStartActivity)</summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Remote Config Key</th><th>Data Class</th><th>Ý nghĩa &amp; Vị trí hiển thị</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>screen_language_start</code></td>
+                <td><code>ScreenLanguageStart</code></td>
+                <td>Cấu hình chức năng màn ngôn ngữ: vị trí nút Next, popup dịch "Translating...", bàn tay hướng dẫn, dropdown quốc gia phụ.</td>
+              </tr>
+              <tr>
+                <td><code>native_language</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Cấu hình tổng cho Native màn ngôn ngữ (màu nút, viền, collapsible, sub-configs).</td>
+              </tr>
+              <tr>
+                <td><code>native_language_init</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native được tải trước từ Splash để sẵn sàng hiển thị ngay khi vào màn chọn ngôn ngữ.</td>
+              </tr>
+              <tr>
+                <td><code>native_language_before</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native dự phòng load trực tiếp tại màn ngôn ngữ nếu <code>native_language_init</code> chưa kịp tải xong.</td>
+              </tr>
+              <tr>
+                <td><code>native_language_click</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native được tải trước và hiển thị khi người dùng bấm chọn một dòng ngôn ngữ.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- Intro / Onboarding -->
+      <details class="keys" open>
+        <summary>4. Màn hình Onboarding / Hướng Dẫn (IntroActivity)</summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Remote Config Key</th><th>Data Class</th><th>Ý nghĩa &amp; Vị trí hiển thị</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>inter_intro</code></td>
+                <td><code>InterModel</code></td>
+                <td>Quảng cáo Interstitial hiển thị khi kết thúc trang Onboarding cuối cùng trước khi chuyển sang màn Main.</td>
+              </tr>
+              <tr>
+                <td><code>native_intro</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native mặc định gắn dưới các trang onboarding (kèm sub-configs theo từng trang).</td>
+              </tr>
+              <tr>
+                <td><code>native_after_inter_intro</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native hiển thị tiếp nối sau khi Interstitial Onboarding đóng lại.</td>
+              </tr>
+              <tr>
+                <td><code>native_intro_full_1_2</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native toàn màn hình (NativeFullActivity) chen giữa trang Onboarding 1 và trang 2.</td>
+              </tr>
+              <tr>
+                <td><code>native_intro_full_2_3</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native toàn màn hình (NativeFullActivity) chen giữa trang Onboarding 2 và trang 3.</td>
+              </tr>
+              <tr>
+                <td><code>native_intro_step1_l1</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native ở trang Onboarding 1 dành riêng cho lần mở app đầu tiên (L1).</td>
+              </tr>
+              <tr>
+                <td><code>native_intro_step1_l2</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native ở trang Onboarding 1 khi người dùng vuốt quay lại từ các trang sau (L2).</td>
+              </tr>
+              <tr>
+                <td><code>native_intro_step4_l1</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native ở trang Onboarding cuối cùng ở lần mở đầu tiên (L1).</td>
+              </tr>
+              <tr>
+                <td><code>native_intro_step4_l2</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native ở trang Onboarding cuối cùng khi người dùng quay lại (L2).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- WelcomeBack -->
+      <details class="keys">
+        <summary>5. Màn hình Chào Mừng Trở Lại (WelcomeBackActivity &amp; Resume)</summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Remote Config Key</th><th>Data Class</th><th>Ý nghĩa &amp; Vị trí hiển thị</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>screen_wcb</code></td>
+                <td><code>ScreenWelcomeBackModel</code></td>
+                <td>Cấu hình chọn hình thức quảng cáo hiển thị khi mở lại app (<code>ad_type</code>: <code>"NATIVE"</code>, <code>"INTERSTITIAL"</code>, hoặc <code>"APP_OPEN"</code>).</td>
+              </tr>
+              <tr>
+                <td><code>native_wcb</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native hiển thị trực tiếp trên màn hình <code>WelcomeBackActivity</code>.</td>
+              </tr>
+              <tr>
+                <td><code>inter_wcb</code></td>
+                <td><code>InterModel</code></td>
+                <td>Quảng cáo Interstitial toàn màn hình kích hoạt khi người dùng resume quay lại ứng dụng.</td>
+              </tr>
+              <tr>
+                <td><code>app_open_wcb</code></td>
+                <td><code>AppOpenModel</code></td>
+                <td>Quảng cáo App Open Resume kích hoạt khi người dùng đưa ứng dụng từ nền lên màn hình chính.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- In-App / Main -->
+      <details class="keys">
+        <summary>6. Màn hình Trong App (MainActivity &amp; Các Tính Năng)</summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Remote Config Key</th><th>Data Class</th><th>Ý nghĩa &amp; Vị trí hiển thị</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>inter_home</code></td>
+                <td><code>InterModel</code></td>
+                <td>Quảng cáo Interstitial khi người dùng thực hiện một hành động chính tại màn Home/Main.</td>
+              </tr>
+              <tr>
+                <td><code>inter_back</code></td>
+                <td><code>InterModel</code></td>
+                <td>Quảng cáo Interstitial khi bấm nút Back hệ thống hoặc nút Back trên Toolbar để quay lại.</td>
+              </tr>
+              <tr>
+                <td><code>native_collapse_custom</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native có hỗ trợ nút thu gọn / mở rộng linh hoạt theo không gian màn hình.</td>
+              </tr>
+              <tr>
+                <td><code>native_banner_custom</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native thiết kế theo dải banner mỏng tiết kiệm diện tích.</td>
+              </tr>
+              <tr>
+                <td><code>banner_all</code></td>
+                <td><code>BannerModel</code></td>
+                <td>Quảng cáo Banner dính chân (fixed bottom) dùng chung trên tất cả các màn hình in-app.</td>
+              </tr>
+              <tr>
+                <td><code>banner_browser</code></td>
+                <td><code>BannerModel</code></td>
+                <td>Quảng cáo Banner chuyên dụng cho màn hình trình duyệt / Webview.</td>
+              </tr>
+              <tr>
+                <td><code>banner_native_collapsible</code></td>
+                <td><code>BannerModel</code></td>
+                <td>Quảng cáo Banner dạng collapsible kết hợp với khung Native collapsible.</td>
+              </tr>
+              <tr>
+                <td><code>ad_reward</code></td>
+                <td><code>RewardModel</code></td>
+                <td>Quảng cáo Rewarded Video tặng lượt dùng hoặc mở khóa tính năng cao cấp cho người dùng.</td>
+              </tr>
+              <tr>
+                <td><code>native_after_inter_home</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native hiển thị tiếp nối sau khi tắt <code>inter_home</code>.</td>
+              </tr>
+              <tr>
+                <td><code>native_permission</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native hiển thị trên màn hình xin cấp quyền (khi <code>isPermissionHandledByApp = false</code>).</td>
+              </tr>
+              <tr>
+                <td><code>screen_permission</code></td>
+                <td><code>ScreenPermissionModel</code></td>
+                <td>Cấu hình hiển thị màn hình xin cấp quyền.</td>
+              </tr>
+              <tr>
+                <td><code>native_server</code></td>
+                <td><code>NativeModel</code></td>
+                <td>Quảng cáo Native tuỳ biến nhận lệnh hiển thị động từ server.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- 10.3. Chi tiết JSON Schema chuẩn cho 5 loại quảng cáo -->
+      <h3>10.3. Chi tiết JSON Schema chuẩn cho 5 loại quảng cáo</h3>
+      <p>
+        Dưới đây là cấu trúc JSON chuẩn xác tương ứng với từng Data Class trong thư viện.
+        Mỗi vị trí quảng cáo trên Firebase Remote Config cần được gán giá trị đúng định dạng JSON này.
+      </p>
+
+      <!-- 1. NativeModel Schema -->
+      <h4>1. Native Ad — NativeModel</h4>
+      <p>
+        Áp dụng cho: <code>native_splash</code>, <code>native_language</code>, <code>native_intro</code>,
+        <code>native_collapse_custom</code>, <code>native_banner_custom</code>, <code>native_wcb</code>,...
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — NativeModel (Ví dụ: native_splash)</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  <span class="tok-str">"is_show"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/2247696110"</span>,
+  <span class="tok-str">"ad_name"</span>: <span class="tok-str">"native_splash"</span>,
+  <span class="tok-str">"ad_layout"</span>: <span class="tok-str">"ads_native_medium_1"</span>,
+  <span class="tok-str">"background_color"</span>: <span class="tok-str">"#FFFFFF"</span>,
+  <span class="tok-str">"border_color"</span>: <span class="tok-str">"#E2E8F0"</span>,
+  <span class="tok-str">"button_color"</span>: <span class="tok-str">"#2563EB"</span>,
+  <span class="tok-str">"is_collapsible"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"is_reload"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"time_reload"</span>: <span class="tok-num">15</span>,
+  <span class="tok-str">"enable_retry"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"retry_delay_ms"</span>: <span class="tok-num">5</span>,
+  <span class="tok-str">"max_retry_count"</span>: <span class="tok-num">3</span>,
+  <span class="tok-str">"ad_id_list"</span>: [
+    { <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/2247696110"</span>, <span class="tok-str">"enable"</span>: <span class="tok-kw">true</span> },
+    { <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/2247696111"</span>, <span class="tok-str">"enable"</span>: <span class="tok-kw">false</span> }
+  ],
+  <span class="tok-str">"native_language"</span>: {
+    <span class="tok-str">"init"</span>: { <span class="tok-str">"is_use"</span>: <span class="tok-kw">true</span>, <span class="tok-str">"ad_id_l1"</span>: [<span class="tok-str">"ca-app-pub-3940256099942544/2247696110"</span>] },
+    <span class="tok-str">"child"</span>: { <span class="tok-str">"is_use"</span>: <span class="tok-kw">true</span> },
+    <span class="tok-str">"drop_down"</span>: { <span class="tok-str">"is_use"</span>: <span class="tok-kw">true</span> }
+  },
+  <span class="tok-str">"native_intro"</span>: {
+    <span class="tok-str">"onboarding_1"</span>: { <span class="tok-str">"is_use"</span>: <span class="tok-kw">true</span> },
+    <span class="tok-str">"onboarding_4"</span>: { <span class="tok-str">"is_use"</span>: <span class="tok-kw">true</span> }
+  }
+}</code></pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Trường</th><th>Kiểu</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>is_show</code></td><td>Boolean</td><td><code>false</code></td><td>Bật/tắt quảng cáo native. Đặt <code>false</code> để ẩn ngay lập tức.</td></tr>
+            <tr><td><code>ad_id</code></td><td>String</td><td><code>null</code></td><td>Ad Unit ID chính của Google AdMob.</td></tr>
+            <tr><td><code>ad_name</code></td><td>String</td><td><code>null</code></td><td>Tên định danh gắn liền với tracking event (ví dụ <code>"native_splash"</code>).</td></tr>
+            <tr><td><code>ad_layout</code></td><td>String</td><td><code>null</code></td><td>
+              Layout hiển thị — bắt buộc thuộc 6 layout chuẩn:
+              <code>"ads_native_small_1"</code>, <code>"ads_native_small_2"</code>, <code>"ads_native_medium_1"</code>,
+              <code>"ads_native_medium_2"</code>, <code>"ads_native_fullscreen_1"</code>, <code>"ads_native_fullscreen_2"</code>.
+            </td></tr>
+            <tr><td><code>background_color</code></td><td>String (Hex)</td><td><code>null</code></td><td>Mã màu nền card native (ví dụ <code>"#FFFFFF"</code>).</td></tr>
+            <tr><td><code>border_color</code></td><td>String (Hex)</td><td><code>null</code></td><td>Mã màu đường viền (ví dụ <code>"#E2E8F0"</code>).</td></tr>
+            <tr><td><code>button_color</code></td><td>String (Hex)</td><td><code>null</code></td><td>Mã màu nút kêu gọi hành động CTA (Install, Open,...).</td></tr>
+            <tr><td><code>is_collapsible</code></td><td>Boolean</td><td><code>false</code></td><td>Có cho phép người dùng thu gọn khung quảng cáo hay không.</td></tr>
+            <tr><td><code>is_reload</code></td><td>Boolean</td><td><code>false</code></td><td>Bật tính năng tự động tải lại quảng cáo mới theo chu kỳ.</td></tr>
+            <tr><td><code>time_reload</code></td><td>Long</td><td><code>0</code></td><td>Số giây giữa mỗi lần tự reload ad mới (ví dụ 15 giây).</td></tr>
+            <tr><td><code>ad_id_list</code></td><td>Array</td><td><code>[]</code></td><td>Danh sách nhiều Ad Unit ID theo thứ tự ưu tiên waterfall. Mỗi item gồm <code>ad_id</code> và <code>enable</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 2. InterModel Schema -->
+      <h4>2. Interstitial Ad — InterModel</h4>
+      <p>
+        Áp dụng cho: <code>inter_splash</code>, <code>inter_intro</code>, <code>inter_home</code>,
+        <code>inter_back</code>, <code>inter_wcb</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — InterModel (Ví dụ: inter_home)</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  <span class="tok-str">"is_show"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/1033173712"</span>,
+  <span class="tok-str">"ad_name"</span>: <span class="tok-str">"inter_home"</span>,
+  <span class="tok-str">"ad_mode"</span>: <span class="tok-str">"load_and_show"</span>,
+  <span class="tok-str">"should_preload_after_shown"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"should_show_native_full_screen"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"ad_id_list"</span>: [
+    { <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/1033173712"</span>, <span class="tok-str">"enable"</span>: <span class="tok-kw">true</span> },
+    { <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/1033173713"</span>, <span class="tok-str">"enable"</span>: <span class="tok-kw">false</span> }
+  ]
+}</code></pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Trường</th><th>Kiểu</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>is_show</code></td><td>Boolean</td><td><code>false</code></td><td>Bật/tắt Interstitial. Đặt <code>false</code> sẽ bỏ qua không hiện ad.</td></tr>
+            <tr><td><code>ad_id</code></td><td>String</td><td><code>null</code></td><td>Ad Unit ID AdMob chính.</td></tr>
+            <tr><td><code>ad_name</code></td><td>String</td><td><code>null</code></td><td>Tên định danh vị trí tracking.</td></tr>
+            <tr><td><code>ad_mode</code></td><td>String</td><td><code>"load_and_show"</code></td><td>
+              Chế độ tải: <code>"load_and_show"</code> (tải rồi hiện ngay) hoặc <code>"load_only"</code> (chỉ tải vào bộ nhớ đệm để gọi show sau).
+            </td></tr>
+            <tr><td><code>should_preload_after_shown</code></td><td>Boolean</td><td><code>false</code></td><td>
+              Tự động preload lại một ad mới vào cache ngay sau khi ad hiện tại vừa đóng lại, giúp sẵn sàng cho lần hiển thị kế tiếp.
+            </td></tr>
+            <tr><td><code>should_show_native_full_screen</code></td><td>Boolean</td><td><code>false</code></td><td>
+              Nếu Interstitial tải thất bại, có tự động mở màn Native toàn màn hình (<code>NativeFullActivity</code>) để bù lấp hay không.
+            </td></tr>
+            <tr><td><code>ad_id_list</code></td><td>Array</td><td><code>[]</code></td><td>Danh sách fallback Ad Unit ID (waterfall).</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3. BannerModel Schema -->
+      <h4>3. Banner Ad — BannerModel</h4>
+      <p>
+        Áp dụng cho: <code>banner_splash</code>, <code>banner_all</code>, <code>banner_browser</code>,
+        <code>banner_native_collapsible</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — BannerModel (Ví dụ: banner_all)</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  <span class="tok-str">"is_show"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/6300978111"</span>,
+  <span class="tok-str">"ad_name"</span>: <span class="tok-str">"banner_all"</span>,
+  <span class="tok-str">"ad_type"</span>: <span class="tok-str">"collapsible_bottom"</span>,
+  <span class="tok-str">"ad_width"</span>: <span class="tok-num">360</span>,
+  <span class="tok-str">"is_reload"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"time_reload"</span>: <span class="tok-num">15</span>,
+  <span class="tok-str">"enable_retry"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"retry_delay_ms"</span>: <span class="tok-num">2</span>,
+  <span class="tok-str">"max_retry_count"</span>: <span class="tok-num">2</span>,
+  <span class="tok-str">"ad_id_list"</span>: [
+    { <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/6300978111"</span>, <span class="tok-str">"enable"</span>: <span class="tok-kw">true</span> }
+  ]
+}</code></pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Trường</th><th>Kiểu</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>is_show</code></td><td>Boolean</td><td><code>false</code></td><td>Bật/tắt Banner ad.</td></tr>
+            <tr><td><code>ad_id</code></td><td>String</td><td><code>null</code></td><td>Ad Unit ID AdMob cho Banner.</td></tr>
+            <tr><td><code>ad_type</code></td><td>String</td><td><code>null</code></td><td>
+              Loại Banner: <code>"normal"</code> (adaptive banner chuẩn) hoặc <code>"collapsible_bottom"</code> (banner mở rộng dạng collapsible có nút đóng thu gọn).
+            </td></tr>
+            <tr><td><code>ad_width</code></td><td>Int</td><td><code>360</code></td><td>Chiều rộng cơ sở tính bằng dp để tính tỷ lệ Adaptive Banner.</td></tr>
+            <tr><td><code>is_reload</code></td><td>Boolean</td><td><code>false</code></td><td>Bật tự động reload banner mới theo thời gian.</td></tr>
+            <tr><td><code>time_reload</code></td><td>Long</td><td><code>10</code></td><td>Khoảng thời gian (giây) giữa các lần reload banner.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4. AppOpenModel Schema -->
+      <h4>4. App Open Ad — AppOpenModel</h4>
+      <p>
+        Áp dụng cho: <code>app_open_splash</code>, <code>app_open_wcb</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — AppOpenModel (Ví dụ: app_open_wcb)</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  <span class="tok-str">"is_show"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/9257395921"</span>,
+  <span class="tok-str">"ad_name"</span>: <span class="tok-str">"app_open_wcb"</span>,
+  <span class="tok-str">"adMode"</span>: <span class="tok-str">"load_and_show"</span>,
+  <span class="tok-str">"cache_timeout_millis"</span>: <span class="tok-num">4</span>,
+  <span class="tok-str">"should_preload_after_shown"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"ad_id_list"</span>: [
+    { <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/9257395921"</span>, <span class="tok-str">"enable"</span>: <span class="tok-kw">true</span> }
+  ]
+}</code></pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Trường</th><th>Kiểu</th><th>Mặc định</th><th>Mô tả</th></tr></thead>
+          <tbody>
+            <tr><td><code>is_show</code></td><td>Boolean</td><td><code>false</code></td><td>Bật/tắt App Open Ad.</td></tr>
+            <tr><td><code>ad_id</code></td><td>String</td><td><code>null</code></td><td>Ad Unit ID AdMob cho App Open.</td></tr>
+            <tr><td><code>adMode</code></td><td>String</td><td><code>null</code></td><td><code>"load_and_show"</code> hoặc <code>"load_only"</code>.</td></tr>
+            <tr><td><code>cache_timeout_millis</code></td><td>Long</td><td><code>4</code></td><td>Thời gian hợp lệ của ad trong cache (AdMob quy định App Open hết hạn sau tối đa 4 giờ).</td></tr>
+            <tr><td><code>should_preload_after_shown</code></td><td>Boolean</td><td><code>false</code></td><td>Preload ad mới ngay khi ad vừa hiển thị xong.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5. RewardModel Schema -->
+      <h4>5. Rewarded Ad — RewardModel</h4>
+      <p>
+        Áp dụng cho: <code>ad_reward</code>.
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — RewardModel (Ví dụ: ad_reward)</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  <span class="tok-str">"is_show"</span>: <span class="tok-kw">true</span>,
+  <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/5224354917"</span>,
+  <span class="tok-str">"ad_name"</span>: <span class="tok-str">"ad_reward"</span>,
+  <span class="tok-str">"ad_mode"</span>: <span class="tok-str">"load_and_show"</span>,
+  <span class="tok-str">"ad_type"</span>: <span class="tok-str">"reward"</span>,
+  <span class="tok-str">"ad_id_list"</span>: [
+    { <span class="tok-str">"ad_id"</span>: <span class="tok-str">"ca-app-pub-3940256099942544/5224354917"</span>, <span class="tok-str">"enable"</span>: <span class="tok-kw">true</span> }
+  ]
+}</code></pre>
+      </div>
+
+      <!-- 10.4. Chi tiết JSON Schema cho các màn hình điều hướng -->
+      <h3>10.4. Chi tiết JSON Schema cho các màn hình điều hướng (Screen Models)</h3>
+      <p>
+        Các màn hình trong luồng Onboarding nhận file cấu hình riêng để điều khiển layout, hiệu ứng và hành vi người dùng:
+      </p>
+
+      <!-- ScreenLanguageStart -->
+      <h4>ScreenLanguageStart — key: screen_language_start</h4>
+      <p>
+        Màn hình chọn ngôn ngữ <code>LanguageStartActivity</code> sử dụng key này để xác định vị trí nút Next,
+        bật/tắt popup dịch và hiệu ứng hoạt ảnh bàn tay hướng dẫn người dùng:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — screen_language_start</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  <span class="tok-str">"screen_name"</span>: <span class="tok-str">"screen_language_start"</span>,
+  <span class="tok-str">"is_hide_navigation"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"next_screen"</span>: <span class="tok-str">"intro"</span>,
+  <span class="tok-str">"lang_sort"</span>: <span class="tok-str">"en,vi,es,pt,hi,fr"</span>,
+  <span class="tok-str">"enableLanguageDrop"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"trans_popup"</span>: {
+    <span class="tok-str">"is_use"</span>: <span class="tok-kw">true</span>,
+    <span class="tok-str">"delay_time"</span>: <span class="tok-num">2</span>
+  },
+  <span class="tok-str">"handAnimate"</span>: {
+    <span class="tok-str">"isUse"</span>: <span class="tok-kw">true</span>,
+    <span class="tok-str">"pos"</span>: <span class="tok-num">0</span>,
+    <span class="tok-str">"1stOnly"</span>: <span class="tok-kw">true</span>
+  },
+  <span class="tok-str">"btnNext"</span>: {
+    <span class="tok-str">"pos"</span>: <span class="tok-str">"right"</span>,
+    <span class="tok-str">"isShow"</span>: <span class="tok-kw">true</span>
+  },
+  <span class="tok-str">"clicked"</span>: {
+    <span class="tok-str">"btnActColor"</span>: <span class="tok-str">"#2563EB"</span>,
+    <span class="tok-str">"delayTimeShowBtnNext"</span>: <span class="tok-num">0.5</span>
+  }
+}</code></pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Trường</th><th>Kiểu / Giá trị</th><th>Ý nghĩa</th></tr></thead>
+          <tbody>
+            <tr><td><code>trans_popup.is_use</code></td><td>Boolean</td><td><code>true</code> → hiển thị popup "Translating..." khi bấm chọn ngôn ngữ xong.</td></tr>
+            <tr><td><code>trans_popup.delay_time</code></td><td>Int (giây)</td><td>Số giây giữ popup dịch trước khi chuyển tiếp sang màn hình tiếp theo.</td></tr>
+            <tr><td><code>handAnimate.isUse</code></td><td>Boolean</td><td><code>true</code> → hiển thị bàn tay chỉ vào dòng ngôn ngữ để nhắc user chọn.</td></tr>
+            <tr><td><code>handAnimate.pos</code></td><td>Int</td><td>Vị trí dòng hiển thị hoạt ảnh bàn tay (0 là phần tử đầu tiên).</td></tr>
+            <tr><td><code>handAnimate.1stOnly</code></td><td>Boolean</td><td><code>true</code> → chỉ hiển thị hoạt ảnh bàn tay ở lần mở app đầu tiên.</td></tr>
+            <tr><td><code>btnNext.pos</code></td><td><code>"left"</code> | <code>"right"</code> | <code>"center"</code></td><td>Vị trí của nút Next trên Toolbar của màn chọn ngôn ngữ.</td></tr>
+            <tr><td><code>clicked.delayTimeShowBtnNext</code></td><td>Float (giây)</td><td>Số giây chờ sau khi người dùng bấm chọn ngôn ngữ thì nút Next mới xuất hiện/kích hoạt.</td></tr>
+            <tr><td><code>enableLanguageDrop</code></td><td>Boolean</td><td><code>true</code> → cho phép mở danh sách dropdown các vùng phụ khi chọn ngôn ngữ mẹ.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ScreenSplashModel & ScreenWelcomeBackModel -->
+      <h4>ScreenSplashModel &amp; ScreenWelcomeBackModel</h4>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — screen_splash &amp; screen_wcb</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-com">// 1. screen_splash</span>
+{
+  <span class="tok-str">"screen_name"</span>: <span class="tok-str">"screen_splash"</span>,
+  <span class="tok-str">"is_hide_navigation"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"next_screen"</span>: <span class="tok-str">"language"</span>,
+  <span class="tok-str">"is_use_text_animate"</span>: <span class="tok-kw">true</span>
+}
+
+<span class="tok-com">// 2. screen_wcb (Màn WelcomeBack)</span>
+{
+  <span class="tok-str">"screen_name"</span>: <span class="tok-str">"screen_welcome_back"</span>,
+  <span class="tok-str">"is_hide_navigation"</span>: <span class="tok-kw">false</span>,
+  <span class="tok-str">"next_screen"</span>: <span class="tok-str">"home"</span>,
+  <span class="tok-str">"ad_type"</span>: <span class="tok-str">"NATIVE"</span> <span class="tok-com">// Giá trị hợp lệ: "NATIVE", "INTERSTITIAL", hoặc "APP_OPEN"</span>
+}</code></pre>
+      </div>
+
+      <!-- 10.5. Cấu hình Chung & Tần suất Interstitial -->
+      <h3>10.5. Cấu hình Toàn Cục (app_config_model) &amp; Tần suất Interstitial</h3>
+      <p>
+        Key <code>app_config_model</code> điều khiển các ràng buộc an toàn để tránh hiển thị quảng cáo quá dày
+        hoặc chặn toàn bộ ads trên các phiên bản app đang review hoặc gặp lỗi:
+      </p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">JSON Schema — app_config_model</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  <span class="tok-str">"interval_between_interstitial"</span>: <span class="tok-num">20</span>,
+  <span class="tok-str">"interstitial_from_start"</span>: <span class="tok-num">5</span>,
+  <span class="tok-str">"ads_blocked_versions"</span>: [<span class="tok-str">"1.0.0"</span>, <span class="tok-str">"1.0.1"</span>]
+}</code></pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Trường</th><th>Kiểu</th><th>Mặc định</th><th>Ý nghĩa</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>interval_between_interstitial</code></td>
+              <td>Long</td>
+              <td><code>20</code></td>
+              <td>Số giây tối thiểu giữa 2 lần hiển thị Interstitial liên tiếp. Nếu chưa đủ thời gian chờ, thư viện sẽ bỏ qua lệnh show.</td>
+            </tr>
+            <tr>
+              <td><code>interstitial_from_start</code></td>
+              <td>Long</td>
+              <td><code>5</code></td>
+              <td>Số giây kể từ lúc app mở thì mới được phép hiện Interstitial đầu tiên.</td>
+            </tr>
+            <tr>
+              <td><code>ads_blocked_versions</code></td>
+              <td>List&lt;String&gt;</td>
+              <td><code>[]</code></td>
+              <td>Danh sách versionName bị chặn hoàn toàn quảng cáo (thường dùng khi đang submit app lên Google Play để tránh vi phạm chính sách).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 10.6. Test Ad Unit IDs từ Google AdMob -->
+      <h3>10.6. Bảng tra cứu Test Ad Unit ID chính thức của Google AdMob</h3>
+      <p>
+        Khi kiểm thử trong môi trường Development, luôn dùng các Ad Unit ID demo dưới đây để tránh bị khóa tài khoản AdMob do vi phạm nhấp chuột ảo:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Định dạng Quảng cáo</th><th>Ad Unit ID Test của Google</th><th>Key Remote Config tương ứng</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>Banner</b></td><td><code>ca-app-pub-3940256099942544/6300978111</code></td><td><code>banner_splash</code>, <code>banner_all</code></td></tr>
+            <tr><td><b>Interstitial</b></td><td><code>ca-app-pub-3940256099942544/1033173712</code></td><td><code>inter_splash</code>, <code>inter_intro</code>, <code>inter_home</code>, <code>inter_back</code></td></tr>
+            <tr><td><b>Native Advanced</b></td><td><code>ca-app-pub-3940256099942544/2247696110</code></td><td><code>native_splash</code>, <code>native_language</code>, <code>native_intro</code>, <code>native_wcb</code></td></tr>
+            <tr><td><b>App Open</b></td><td><code>ca-app-pub-3940256099942544/9257395921</code></td><td><code>app_open_splash</code>, <code>app_open_wcb</code></td></tr>
+            <tr><td><b>Rewarded Video</b></td><td><code>ca-app-pub-3940256099942544/5224354917</code></td><td><code>ad_reward</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 10.7. Checklist trước khi Publish Remote Config -->
+      <h3>10.7. Bảng kiểm tra (Checklist) trước khi Publish Remote Config</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>STT</th><th>Hạng mục kiểm tra</th><th>Yêu cầu</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Tính hợp lệ của cú pháp JSON</td><td>Kiểm tra JSON bằng công cụ JSONLint — không có dấu phẩy thừa ở cuối (trailing commas), không có ký tự đặc biệt bị lỗi encode.</td></tr>
+            <tr><td>2</td><td>Kiểu dữ liệu Boolean và Number</td><td>Trường <code>is_show</code>, <code>enable</code> phải là boolean nguyên bản (<code>true</code> hoặc <code>false</code>), <b>không bọc trong dấu ngoặc kép</b> (<code>"true"</code>).</td></tr>
+            <tr><td>3</td><td>Khớp chính xác tên layout Native</td><td>Trường <code>ad_layout</code> phải là 1 trong 6 tên layout hợp lệ: <code>ads_native_small_1</code>, <code>ads_native_small_2</code>, <code>ads_native_medium_1</code>, <code>ads_native_medium_2</code>, <code>ads_native_fullscreen_1</code>, <code>ads_native_fullscreen_2</code>.</td></tr>
+            <tr><td>4</td><td>Waterfall ID danh sách</td><td>Nếu có khai báo <code>ad_id_list</code>, đảm bảo ít nhất một phần tử có <code>"enable": true</code> và <code>ad_id</code> không được để chuỗi rỗng.</td></tr>
+            <tr><td>5</td><td>Publish và Fetch thử nghiệm</td><td>Sau khi lưu trên Firebase Console, bấm <b>Publish changes</b> và xác nhận trên app test rằng logcat in ra <code>Config fetch successful</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #tracking ======================= -->
+  <section class="section reveal" id="tracking">
+    <p class="section__eyebrow">Bước 11</p>
+    <h2 class="section__title">Tracking</h2>
+    <p class="section__lead">
+      Mặc định thư viện ghi event lên Firebase Analytics và logcat qua
+      <code>CompositeEventTracker</code> (gồm <code>FirebaseEventTrackerImpl</code> và
+      <code>LogEventTracker</code>). Bạn không cần làm gì thêm.
+    </p>
+
+    <div class="section__body">
+      <p>Để thay bằng tracker riêng, override <code>setupTracker()</code>:</p>
+
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">MyApplication.kt</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code><span class="tok-kw">import</span> com.ignova.adsflow.core.tracker.AppTrackers
+
+<span class="tok-kw">override fun</span> setupTracker() {
+    <span class="tok-cmt">// Thay tracker mặc định</span>
+    AppTrackers.tracker = <span class="tok-typ">CompositeEventTracker</span>(
+        listOf(<span class="tok-typ">MyCustomTracker</span>(), <span class="tok-typ">LogEventTracker</span>())
+    )
+    AppTrackers.init(<span class="tok-kw">this</span>)
+}</code></pre>
+      </div>
+
+      <h3>11.1. Tiền tố log để debug</h3>
+      <p>Mỗi loại quảng cáo có tiền tố riêng trong log:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tiền tố</th><th>Loại quảng cáo</th><th>Ví dụ log</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>in_</code></td><td>Interstitial</td><td><code>in_inter_home_show_called</code></td></tr>
+            <tr><td><code>na_</code></td><td>Native</td><td><code>na_native_wcb_loaded</code></td></tr>
+            <tr><td><code>ba_</code></td><td>Banner</td><td><code>ba_banner_all_loaded</code></td></tr>
+            <tr><td><code>ao_</code></td><td>App Open</td><td><code>ao_app_open_splash_show_called</code></td></tr>
+            <tr><td><code>rw_</code></td><td>Rewarded</td><td><code>rw_ad_reward_loaded</code></td></tr>
+            <tr><td><code>flow_</code></td><td>Điều hướng</td><td><code>flow_nav_flow_target_main</code></td></tr>
+            <tr><td><code>pre_</code></td><td>Preload</td><td><code>pre_na_after_inter_home_loaded</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p class="note__title">📌 Gỡ Logcat khi lên production</p>
+        <p>
+          Tracker log ra Logcat với tiền tố theo loại ads. Giữ nguyên khi debug; cân nhắc bỏ
+          <code>LogEventTracker</code> khi phát hành để không rò rỉ thông tin.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= #faq ======================= -->
+  <section class="section reveal" id="faq">
+    <p class="section__eyebrow">Tham khảo</p>
+    <h2 class="section__title">Xử lý sự cố</h2>
+    <p class="section__lead">
+      Các lỗi thường gặp khi tích hợp, cùng cách chẩn đoán và khắc phục.
+    </p>
+
+    <div class="section__body">
+
+      <details class="faq">
+        <summary>12.1 · Lỗi 401 Unauthorized khi tải dependency</summary>
+        <div class="faq__body">
+          <p>Kho GitHub Packages từ chối truy cập do thiếu hoặc sai thông tin xác thực.</p>
+          <p><b>Cách sửa:</b></p>
+          <ul>
+            <li>Kiểm tra <code>gpr.user</code> và <code>gpr.key</code> đã khai báo đúng trong
+                <code>~/.gradle/gradle.properties</code>.</li>
+            <li>PAT cần quyền <code>read:packages</code>.</li>
+            <li>Nếu dùng tài khoản org, user phải có quyền truy cập package.</li>
+          </ul>
+          <p>Xác nhận package tồn tại:</p>
+          <p><code>https://maven.pkg.github.com/IG-NOVA-TEAM/Ads_Flow/com/ignova/ads-flow/</code></p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.2 · WelcomeBack không hiện dù đã khai báo lifecycle callback</summary>
+        <div class="faq__body">
+          <p>
+            Đây là lỗi phổ biến nhất. Kiểm tra theo thứ tự, dừng ở điều kiện đầu tiên không thỏa:
+          </p>
+          <ol>
+            <li>
+              <code>AdCommon.isShowingAd</code> có đang kẹt <code>true</code> không?
+              Đây là nguyên nhân hay gặp nhất. Biến này được bật ở đầu mỗi màn flow và chỉ được tắt ở
+              một số nơi — nếu một activity bật mà quên tắt, mọi lần resume sau đó đều bị chặn.
+            </li>
+            <li>Đã override <code>excludedFromWelcomeBack()</code> chưa, và danh sách có chứa nhầm
+                <code>MainActivity</code> không?</li>
+            <li>Đã map <code>FlowTarget.WELCOME_BACK</code> trong <code>activityMap</code> chưa?</li>
+            <li><code>defaultAdSuppressor()</code> có đang trả về <code>true</code> không?</li>
+            <li>App có còn sống tới khi người dùng quay lại không, hay đã bị hệ thống kill?
+                Khi app bị kill và mở lại, đây là lần khởi động mới — chỉ hiện WelcomeBack khi
+                <i>resume</i> từ background.</li>
+          </ol>
+          <p>Để bật/tắt thủ công khi debug:</p>
+          <p><code>AdCommon.isShowResume = true</code></p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.3 · Không thấy quảng cáo nào hiện lên</summary>
+        <div class="faq__body">
+          <p>Sau khi loại trừ lỗi WelcomeBack, kiểm tra theo thứ tự:</p>
+          <ol>
+            <li>Key có tồn tại trên Remote Config chưa, và đúng tên chưa? Key sai chính xác sẽ bị coi là không tồn tại.</li>
+            <li>Trường <code>is_show</code> có đang là <code>true</code> không?</li>
+            <li><code>defaultAdSuppressor()</code> có vô tình trả về <code>true</code> không?</li>
+            <li>Interstitial có bị chặn bởi <code>interval_between_interstitial</code> không? Mặc định là 20 giây giữa hai lần.</li>
+            <li>Đã truyền đúng <code>viewLifecycleOwner</code> trong Fragment chưa?</li>
+          </ol>
+          <p>Xem logcat để biết lý do cụ thể — mỗi lần bị bỏ qua đều có log riêng:</p>
+          <p><code>adb logcat | grep -E "_null|_suppressed|_ctx_invalid|_pro_null"</code></p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.4 · Build fail: "requires a placeholder substitution but no value for …"</summary>
+        <div class="faq__body">
+          <p>
+            Manifest merger không tìm thấy giá trị cho một placeholder mà thư viện yêu cầu. Thông
+            báo đầy đủ trông như:
+          </p>
+          <p><code>Attribute meta-data#com.google.android.gms.ads.APPLICATION_ID@value at AndroidManifest.xml requires a placeholder substitution but no value for &lt;admobAppId&gt; is provided.</code></p>
+          <p><b>Cách sửa:</b> khai báo placeholder tương ứng trong <code>defaultConfig</code> của
+            module app. Xem <a href="#artifact">mục 1.4</a> để biết chính xác cần những giá trị nào.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.5 · Quảng cáo không hiện ra dù App ID đã đúng</summary>
+        <div class="faq__body">
+          <p>
+            Bạn đang dùng AdMob <b>test App ID</b>:
+            <code>ca-app-pub-3940256099942544~3347511713</code>. Test ID chỉ hiện test ads, quảng cáo
+            thật của bạn sẽ không bao giờ xuất hiện.
+          </p>
+          <p><b>Cách sửa:</b> thay bằng App ID thật lấy từ AdMob Console trước khi phát hành.</p>
+          <p>
+            Kiểm tra nhanh: mở
+            <code>app/build/intermediates/merged_manifest/&lt;buildType&gt;/…/AndroidManifest.xml</code>,
+            tìm <code>com.google.android.gms.ads.APPLICATION_ID</code> — nếu giá trị kết thúc bằng
+            <code>~3347511713</code> thì bạn vẫn đang dùng test ID.
+          </p>
+          <p>Cách tách ID theo build type ở <a href="#artifact">mục 1.4</a>.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.6 · App bị mở 2 lần, hoặc hộp thoại "Open with" mỗi lần mở app</summary>
+        <div class="faq__body">
+          <p>
+            Bạn đã đặt <code>intent-filter</code> MAIN/LAUNCHER trên <b>cả</b>
+            <code>SplashActivity</code> và <code>MainActivity</code>. Chỉ một activity được mang
+            LAUNCHER.
+          </p>
+          <p><b>Cách sửa:</b> bỏ <code>intent-filter</code> khỏi <code>MainActivity</code>, giữ lại
+            trên <code>SplashActivity</code> của thư viện (như ví dụ ở <a href="#manifest">mục 2.1</a>).</p>
+          <p>
+            Nếu bạn <b>không</b> muốn dùng flow onboarding của thư viện thì đặt LAUNCHER trên
+            <code>MainActivity</code> và bỏ khai báo lại <code>SplashActivity</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.7 · Luồng bị kẹt sau khi hiện interstitial</summary>
+        <div class="faq__body">
+          <p>
+            Bạn đặt logic chuyển màn <b>ngoài</b> callback. Khi quảng cáo tải thất bại,
+            <code>onNextAction</code> vẫn được gọi — nhưng code của bạn đã chuyển màn trước đó một lần,
+            gây ra chuyển màn đôi hoặc kẹt luồng.
+          </p>
+          <p><b>Cách sửa:</b> đặt <b>toàn bộ</b> logic chuyển màn vào trong <code>onNextAction</code>.
+            Chi tiết ở <a href="#ads-api">mục 9.3</a>.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.8 · Quảng cáo hiện sai chỗ hoặc hiện ở màn không mong muốn</summary>
+        <div class="faq__body">
+          <p>
+            Container quảng cáo nằm sai vị trí trong layout, hoặc key đang trỏ tới vị trí không dành cho
+            màn hình đó.
+          </p>
+          <p><b>Cách sửa:</b></p>
+          <ul>
+            <li>Đảm bảo mỗi container có <code>layout_height="wrap_content"</code> và nằm đúng vị trí.</li>
+            <li>Kiểm tra key trên Remote Config có đúng vị trí bạn cần không.</li>
+            <li>Nếu container bị giữ chỗ trống khi không có quảng cáo, thư viện đã tự ẩn và xoá view
+                con — hãy kiểm tra lại khai báo ban đầu.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.9 · App bị treo ở Splash</summary>
+        <div class="faq__body">
+          <p>
+            Màn Splash có timeout cứng là <b>90 giây</b>; timeout fetch Remote Config là <b>15 giây</b>.
+            Sau thời gian này luồng vẫn phải đi tiếp.
+          </p>
+          <p><b>Kiểm tra:</b></p>
+          <ul>
+            <li>Mất mạng lúc mở app → app chuyển sang <code>NoInternetActivity</code>, không phải treo.</li>
+            <li>Thiếu khai báo <code>FlowTarget.MAIN</code> trong <code>activityMap</code> → không biết
+                đi đâu sau flow. Xem <a href="#application">bước 3</a>.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>12.10 · Không tìm thấy tài liệu build &amp; phát hành</summary>
+        <div class="faq__body">
+          <p>
+            Tài liệu dành cho người phát triển thư viện nằm trong file <code>IMPLEMENT.md</code> ở thư mục
+            gốc repository — bao gồm build local, publish lên Maven Local và GitHub Packages, cấu
+            hình ProGuard, và quy trình release theo tag.
+          </p>
+        </div>
+      </details>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================ SEARCH EMPTY STATE ============================ -->
+<div class="empty" id="emptyState" hidden>
+  <div class="empty__icon" aria-hidden="true">⌕</div>
+  <p><b>Không tìm thấy nội dung phù hợp.</b></p>
+  <p>Thử từ khoá khác, ví dụ: <code>manifest</code>, <code>native</code>, <code>app_open</code>, <code>suppressor</code>.</p>
+</div>
+
+<footer class="footer">
+  <p>
+    Ads Flow — <code>com.ignova:ads-flow</code> · Tài liệu dành cho app sử dụng thư viện ·
+    © <span id="year">2026</span> IG Nova
+  </p>
+  <p>
+    Nếu bạn đang phát triển thư viện, xem <code>IMPLEMENT.md</code>.
+  </p>
+</footer>
+
+<script src="assets/guide.js"></script>
+</body>
+</html>
