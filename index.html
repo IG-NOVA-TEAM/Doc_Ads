@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ads Flow — Hướng dẫn tích hợp cho app Android</title>
-<meta name="description" content="Tài liệu tích hợp thư viện Ads Flow (com.ignova:ads-flow) cho app Android: cấu hình Maven, AdsFlowConfig, Remote Config, 5 loại quảng cáo và xử lý sự cố.">
+<meta name="description" content="Tài liệu tích hợp thư viện Ads Flow (com.ignova:ads-flow-normal) cho app Android: cấu hình Maven, AdsFlowConfig, Remote Config, 5 loại quảng cáo và xử lý sự cố.">
 <link rel="stylesheet" href="assets/guide.css">
 </head>
 <body>
@@ -19,7 +19,7 @@
     <div class="sidebar__logo" aria-hidden="true">AF</div>
     <div>
       <p class="sidebar__title">Ads Flow</p>
-      <p class="sidebar__subtitle">com.ignova:ads-flow</p>
+      <p class="sidebar__subtitle">com.ignova:ads-flow-normal</p>
     </div>
   </div>
 
@@ -221,8 +221,8 @@
     <p class="section__eyebrow">Bước 1</p>
     <h2 class="section__title">Tích hợp Maven Artifact</h2>
     <p class="section__lead">
-      Thư viện được publish dưới tên <code>com.ignova:ads-flow</code> lên
-      <b>GitHub Packages</code>. Bạn cần khai báo kho lưu trữ, thông tin xác thực và dependency.
+      Thư viện được publish dưới tên <code>com.ignova:ads-flow-normal</code> lên
+      <b>GitHub Packages</b>. Bạn cần khai báo kho lưu trữ, thông tin xác thực và dependency.
     </p>
 
     <div class="section__body">
@@ -245,10 +245,10 @@
         google()
         mavenCentral()
 
-        <span class="tok-cmt">// Kho chứa com.ignova:ads-flow và com.ignova:ad-lib</span>
+        <span class="tok-cmt">// Kho chứa com.ignova:ads-flow-normal và com.ignova:ad-lib</span>
         maven {
             name = <span class="tok-str">"GitHubPackages"</span>
-            url = uri(<span class="tok-str">"https://maven.pkg.github.com/IG-NOVA-TEAM/Ads_Flow"</span>)
+            url = uri(<span class="tok-str">"https://maven.pkg.github.com/IG-NOVA-TEAM/INV_Lib_Ads_Default"</span>)
             credentials {
                 username = providers.gradleProperty(<span class="tok-str">"gpr.user"</span>).orNull
                     ?: providers.environmentVariable(<span class="tok-str">"GH_USERNAME"</span>).orNull
@@ -319,7 +319,10 @@ gpr.key=YOUR_GITHUB_PAT</code></pre>
 }
 
 dependencies {
-    implementation(<span class="tok-str">"com.ignova:ads-flow:1.0.0"</span>)
+    implementation(<span class="tok-str">"com.ignova:ads-flow-normal:1.0.0"</span>)
+    <span class="tok-cmt">// Hoặc chọn bản khác theo luồng của app:</span>
+    <span class="tok-cmt">// implementation("com.ignova:ads-flow-oreca:1.0.0")</span>
+    <span class="tok-cmt">// implementation("com.ignova:ads-flow-unisoft:1.0.0")</span>
 }</code></pre>
       </div>
 
@@ -3383,7 +3386,7 @@ appOpenPlacement = AdOpenManager.loadAndShowListId(
             <li>Nếu dùng tài khoản org, user phải có quyền truy cập package.</li>
           </ul>
           <p>Xác nhận package tồn tại:</p>
-          <p><code>https://maven.pkg.github.com/IG-NOVA-TEAM/Ads_Flow/com/ignova/ads-flow/</code></p>
+          <p><code>https://maven.pkg.github.com/IG-NOVA-TEAM/INV_Lib_Ads_Default/com/ignova/ads-flow-normal/</code></p>
         </div>
       </details>
 
@@ -3548,7 +3551,7 @@ appOpenPlacement = AdOpenManager.loadAndShowListId(
 
 <footer class="footer">
   <p>
-    Ads Flow — <code>com.ignova:ads-flow</code> · Tài liệu dành cho app sử dụng thư viện ·
+    Ads Flow — <code>com.ignova:ads-flow-normal</code> · Tài liệu dành cho app sử dụng thư viện ·
     © <span id="year">2026</span> IG Nova
   </p>
   <p>
