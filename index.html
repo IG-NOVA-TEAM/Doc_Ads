@@ -72,7 +72,7 @@
     <button class="search__clear" id="searchClearBtn" aria-label="Xoá tìm kiếm" hidden>×</button>
   </div>
 
-  <span class="header__version">v1.0.0</span>
+  <span class="header__version">v1.1.0</span>
   <button class="icon-btn" id="themeToggleBtn" aria-label="Đổi giao diện">☀</button>
 </header>
 
@@ -319,10 +319,10 @@ gpr.key=YOUR_GITHUB_PAT</code></pre>
 }
 
 dependencies {
-    implementation(<span class="tok-str">"com.ignova:ads-flow-normal:1.0.0"</span>)
+    implementation(<span class="tok-str">"com.ignova:ads-flow-normal:1.1.0"</span>)
     <span class="tok-cmt">// Hoặc chọn bản khác theo luồng của app:</span>
-    <span class="tok-cmt">// implementation("com.ignova:ads-flow-oreca:1.0.0")</span>
-    <span class="tok-cmt">// implementation("com.ignova:ads-flow-unisoft:1.0.0")</span>
+    <span class="tok-cmt">// implementation("com.ignova:ads-flow-oreca:1.1.0")</span>
+    <span class="tok-cmt">// implementation("com.ignova:ads-flow-unisoft:1.1.0")</span>
 }</code></pre>
       </div>
 
@@ -1291,7 +1291,10 @@ dependencies {
 
         <div class="annot__row">
           <div class="annot__code">lineDividerColor / lineDividerColorRes</div>
-          <div class="annot__note"><p>Màu đường kẻ ngăn cách giữa các dòng.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__note">
+            <p>Màu đường kẻ phân cấp giữa các dòng. Áp dụng đồng bộ cho cả đường kẻ dọc (<code>verticalLine</code>) và nhánh bo góc ngôn ngữ con (<code>icPre</code> qua <code>setColorFilter(color, PorterDuff.Mode.SRC_IN)</code> &amp; <code>ImageViewCompat.setImageTintList</code>) đảm bảo 100% cùng tông màu trên mọi phiên bản Android.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
         </div>
 
         <div class="annot__row">
@@ -1426,16 +1429,7 @@ dependencies {
 
         <div class="annot__row">
           <div class="annot__code">illustrationRes: Int?</div>
-          <div class="annot__note"><p>Ảnh minh hoạ chính của màn. Bị bỏ qua nếu bạn truyền <code>lottieRawRes</code>.</p><span class="annot__default">mặc định: null</span></div>
-        </div>
-
-        <div class="annot__row">
-          <div class="annot__code">lottieRawRes: Int?</div>
-          <div class="annot__note">
-            <p>File Lottie trong <code>res/raw</code> — animation động cho màn WelcomeBack.</p>
-            <p>Ưu tiên hơn <code>illustrationRes</code>. Dùng khi muốn hiệu ứng sinh động hơn ảnh tĩnh.</p>
-            <span class="annot__default">mặc định: null</span>
-          </div>
+          <div class="annot__note"><p>Ảnh minh hoạ chính của màn (Drawable/Vector resource).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1491,7 +1485,7 @@ dependencies {
     titleRes = R.string.welcome_back_title,
     contentRes = R.string.welcome_back_content,
     btnContinueTextRes = R.string.continue_label,
-    lottieRawRes = R.raw.welcome_back_animation
+    illustrationRes = R.drawable.ic_welcome_back
 )</code></pre>
       </div>
 
@@ -2470,17 +2464,1438 @@ appOpenPlacement = AdOpenManager.loadAndShowListId(
       <p>
         Trong module <code>app</code> mẫu, thư viện cung cấp sẵn màn hình <code>DemoAdsActivity</code>
         (mở trực tiếp bằng nút <b>"🚀 MỞ DEMO ADS (5 LOẠI ADS)"</b> trên <code>MainActivity</code>).
-        Màn hình này được thiết kế chuẩn Production phục vụ Dev &amp; QA kiểm thử tương tác thực tế với 5 loại quảng cáo.
+        Màn hình này được thiết kế trực quan chuẩn Production phục vụ Dev &amp; QA kiểm thử tương tác thực tế với 5 loại quảng cáo.
       </p>
 
       <div class="note note--success">
         <p class="note__title">🎯 Tính năng nổi bật của DemoAdsActivity</p>
         <ul>
-          <li><b>Test độc lập 5 loại Ads:</b> Banner, Native (có container xem trước), Interstitial, Rewarded Video (có cộng coin thưởng), App Open.</li>
-          <li><b>Kiểm thử đủ 2 trạng thái:</b> Nút <code>[Preload]</code> (gọi <code>loadOnly</code>) → nút <code>[Show]</code> (gọi <code>show</code>) và nút <code>[Load &amp; Show]</code> (tải &amp; hiện ngay).</li>
+          <li><b>Bảng hướng dẫn trực quan ở đầu màn hình:</b> Giải thích ngay cơ chế 3 nút <code>[Preload]</code>, <code>[Show]</code>, và <code>[Load &amp; Show]</code> kèm thông báo Toast tương tác.</li>
+          <li><b>Test độc lập 5 loại Ads:</b> Banner (có khung hiển thị), Native (render card xem trước), Interstitial, Rewarded Video (cộng coin demo), App Open.</li>
+          <li><b>Huy hiệu trạng thái trực quan:</b> Hiển thị màu sắc theo từng giai đoạn (<code>IDLE</code>, <code>PRELOADING...</code>, <code>PRELOADED (READY)</code>, <code>SHOWING</code>, <code>FAILED</code>).</li>
           <li><b>Khung Real-time Console Log ở dưới màn hình:</b> Tích hợp <code>TrackerEventListener</code> từ <code>AppTrackers</code>, hiển thị từng mili-giây mọi sự kiện Firebase EventTracker và callback trạng thái mà không cần cắm cáp xem Logcat!</li>
           <li><b>Nút thao tác tiện ích:</b> Nút <i>"Xóa log"</i> dọn sạch console và tự động cuộn theo dòng log mới nhất.</li>
         </ul>
+      </div>
+
+      <h4>Danh mục 5 loại quảng cáo &amp; Vị trí áp dụng</h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Loại Quảng Cáo</th>
+              <th>Đặc Điểm &amp; Trải Nghiệm</th>
+              <th>Vị Trí Xuất Hiện Tiêu Chuẩn</th>
+              <th>Key Test Trong Demo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>1. Banner Ad</b></td>
+              <td>Dải chữ nhật dẹt cố định ở chân hoặc đầu màn hình. Không ngắt quãng thao tác của người dùng.</td>
+              <td>Dashboard, Màn hình danh sách (List), Màn chi tiết (Detail)</td>
+              <td><code>banner_all</code></td>
+            </tr>
+            <tr>
+              <td><b>2. Native Ad</b></td>
+              <td>Quảng cáo tùy biến giao diện hòa nhập mượt mà vào phong cách app (chứa Icon, Headline, Body, Button CTA).</td>
+              <td>Language Start, Intro Onboarding, Danh sách tin tức (Feed)</td>
+              <td><code>native_collapse_custom</code></td>
+            </tr>
+            <tr>
+              <td><b>3. Interstitial Ad</b></td>
+              <td>Quảng cáo toàn màn hình xuất hiện ngắt quãng giữa các luồng tác vụ. Có cơ chế cooldown / frequency capping chống spam.</td>
+              <td>Sau khi hoàn thành tính năng, Chuyển tab chức năng, Bấm nút Back/Next</td>
+              <td><code>inter_home</code></td>
+            </tr>
+            <tr>
+              <td><b>4. Rewarded Video</b></td>
+              <td>Video toàn màn hình người dùng chủ động bấm xem để nhận phần thưởng (không thể bỏ qua nếu muốn nhận quà).</td>
+              <td>Mở khóa tính năng VIP tạm thời, Nhận Coin / Lượt dùng miễn phí</td>
+              <td><code>reward_home</code></td>
+            </tr>
+            <tr>
+              <td><b>5. App Open Ad</b></td>
+              <td>Quảng cáo toàn màn hình khi người dùng mở ứng dụng hoặc quay lại từ chạy ngầm (Background). Được bảo vệ bởi <code>AppOpenSuppressor</code>.</td>
+              <td>Màn Splash (khởi động app), Màn Welcome Back (quay lại app)</td>
+              <td><code>app_open_wcb</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Ý nghĩa 3 chế độ kiểm thử (Nút bấm)</h4>
+      <ul>
+        <li><b>⚡ Nút [Preload] (Load Only):</b> Gọi phương thức nạp trước quảng cáo vào bộ nhớ đệm (Placement) chạy ngầm. Trạng thái chuyển sang <code>PRELOADED (READY)</code>. Dùng khi muốn tối ưu trải nghiệm (ví dụ: nạp ở Splash để sang Intro hiển thị ngay tức thì).</li>
+        <li><b>👁️ Nút [Show]:</b> Kích hoạt hiển thị quảng cáo từ Placement đã nạp sẵn trong bộ nhớ đệm. Nếu chưa bấm Preload, hệ thống sẽ cảnh báo Toast yêu cầu nạp trước.</li>
+        <li><b>🚀 Nút [Load &amp; Show]:</b> Gộp 2 bước: Vừa gửi yêu cầu tải về, vừa tự động bung hiển thị ngay khi nạp thành công. Thích hợp cho các màn hình không có thời gian nạp ngầm trước.</li>
+      </ul>
+
+            <h4>Trọn bộ mã nguồn DemoAdsActivity (Copy &amp; Chạy ngay trong App của bạn)</h4>
+      <p>
+        Vì thư viện phân phối độc lập qua Maven, tầng App của bạn sẽ không có sẵn các file activity demo từ source code này.
+        Dưới đây là <b>toàn bộ mã nguồn hoàn chỉnh</b> của <code>DemoAdsActivity</code> đã được thiết kế sẵn sàng để bạn copy thẳng vào dự án:
+      </p>
+
+      <h5>Bước 1: Khai báo vào AndroidManifest.xml</h5>
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">AndroidManifest.xml</span>
+          <span class="code__tag">xml</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>&lt;activity
+    android:name=".DemoAdsActivity"
+    android:exported="false"
+    android:screenOrientation="portrait" /&gt;</code></pre>
+      </div>
+
+      <h5>Bước 2: Tạo file Layout res/layout/activity_demo_ads.xml</h5>
+      <p>Bấm mở rộng để xem hoặc nhấn nút <b>Copy</b> để sao chép toàn bộ 700+ dòng giao diện:</p>
+      <details class="faq" style="margin-bottom: 16px;">
+        <summary style="font-size: 14px; font-weight: bold; cursor: pointer; padding: 12px;">📂 Bấm để xem / copy toàn bộ layout: res/layout/activity_demo_ads.xml</summary>
+        <div class="faq__body" style="padding: 10px;">
+          <div class="code">
+            <div class="code__bar">
+              <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="code__file">app/src/main/res/layout/activity_demo_ads.xml</span>
+              <span class="code__tag">xml</span>
+              <button class="code__copy">Copy</button>
+            </div>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;LinearLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    xmlns:tools=&quot;http://schemas.android.com/tools&quot;
+    android:id=&quot;@+id/rootDemoAds&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;match_parent&quot;
+    android:orientation=&quot;vertical&quot;
+    android:background=&quot;@color/ads_screen_bg_gradient_start&quot;
+    tools:context=&quot;.DemoAdsActivity&quot;&gt;
+
+    &lt;!-- Top App Bar --&gt;
+    &lt;LinearLayout
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;wrap_content&quot;
+        android:orientation=&quot;horizontal&quot;
+        android:gravity=&quot;center_vertical&quot;
+        android:paddingHorizontal=&quot;16dp&quot;
+        android:paddingVertical=&quot;12dp&quot;&gt;
+
+        &lt;ImageView
+            android:id=&quot;@+id/btnBack&quot;
+            android:layout_width=&quot;40dp&quot;
+            android:layout_height=&quot;40dp&quot;
+            android:padding=&quot;8dp&quot;
+            android:src=&quot;@drawable/ic_back_vpn&quot;
+            android:contentDescription=&quot;Back&quot;
+            android:background=&quot;?attr/selectableItemBackgroundBorderless&quot; /&gt;
+
+        &lt;LinearLayout
+            android:layout_width=&quot;0dp&quot;
+            android:layout_height=&quot;wrap_content&quot;
+            android:layout_weight=&quot;1&quot;
+            android:layout_marginStart=&quot;8dp&quot;
+            android:orientation=&quot;vertical&quot;&gt;
+
+            &lt;TextView
+                android:layout_width=&quot;wrap_content&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:text=&quot;Demo 5 Loại Quảng Cáo&quot;
+                android:textColor=&quot;@color/demo_text_primary&quot;
+                android:textSize=&quot;18sp&quot;
+                android:textStyle=&quot;bold&quot; /&gt;
+
+            &lt;TextView
+                android:layout_width=&quot;wrap_content&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:text=&quot;BaseAdPlacement • LoadOnly &amp;amp; LoadAndShow&quot;
+                android:textColor=&quot;@color/demo_text_secondary&quot;
+                android:textSize=&quot;12sp&quot; /&gt;
+        &lt;/LinearLayout&gt;
+    &lt;/LinearLayout&gt;
+
+    &lt;View
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;1dp&quot;
+        android:background=&quot;@color/demo_bg_item_unselected&quot; /&gt;
+
+    &lt;!-- Phần cuộn các Cards điều khiển (Trọng số 1) --&gt;
+    &lt;androidx.core.widget.NestedScrollView
+        android:id=&quot;@+id/scrollControls&quot;
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;0dp&quot;
+        android:layout_weight=&quot;1&quot;
+        android:fillViewport=&quot;true&quot;&gt;
+
+        &lt;LinearLayout
+            android:layout_width=&quot;match_parent&quot;
+            android:layout_height=&quot;wrap_content&quot;
+            android:orientation=&quot;vertical&quot;
+            android:padding=&quot;16dp&quot;&gt;
+
+            &lt;!-- ===================== HƯỚNG DẪN KIỂM THỬ TRỰC QUAN ===================== --&gt;
+            &lt;LinearLayout
+                android:layout_width=&quot;match_parent&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:orientation=&quot;vertical&quot;
+                android:background=&quot;@drawable/bg_demo_card&quot;
+                android:padding=&quot;12dp&quot;
+                android:layout_marginBottom=&quot;14dp&quot;&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;wrap_content&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:text=&quot;💡 HƯỚNG DẪN KIỂM THỬ &amp;amp; CƠ CHẾ NÚT BẤM&quot;
+                    android:textColor=&quot;@color/demo_accent&quot;
+                    android:textSize=&quot;13sp&quot;
+                    android:textStyle=&quot;bold&quot; /&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;⚡ [Preload]: Nạp ngầm trước vào cache Placement, giúp &#x27;Show&#x27; tức thì không độ trễ.\n👁️ [Show]: Kích hoạt hiển thị quảng cáo đã Preload sẵn trong bộ nhớ đệm.\n🚀 [Load &amp;amp; Show]: Tải trực tiếp và tự động bung hiển thị ngay khi nạp xong.&quot;
+                    android:textColor=&quot;@color/demo_text_primary&quot;
+                    android:textSize=&quot;11sp&quot;
+                    android:lineSpacingExtra=&quot;3dp&quot; /&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;!-- ===================== 1. BANNER AD ===================== --&gt;
+            &lt;LinearLayout
+                android:layout_width=&quot;match_parent&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:orientation=&quot;vertical&quot;
+                android:background=&quot;@drawable/bg_demo_card&quot;
+                android:padding=&quot;14dp&quot;
+                android:layout_marginBottom=&quot;16dp&quot;&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:gravity=&quot;center_vertical&quot;&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;1. BANNER AD&quot;
+                        android:textColor=&quot;@color/demo_text_primary&quot;
+                        android:textSize=&quot;15sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:layout_marginStart=&quot;8dp&quot;
+                        android:text=&quot;(key: banner_all)&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot; /&gt;
+
+                    &lt;View
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;1dp&quot;
+                        android:layout_weight=&quot;1&quot; /&gt;
+
+                    &lt;TextView
+                        android:id=&quot;@+id/tvBannerStatus&quot;
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;IDLE&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;📌 Vị trí: Dải cố định ở chân/đầu màn hình (Dashboard, List). Không làm gián đoạn thao tác người dùng.&quot;
+                    android:textColor=&quot;@color/demo_text_secondary&quot;
+                    android:textSize=&quot;11sp&quot; /&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:layout_marginTop=&quot;10dp&quot;&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnBannerLoadOnly&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:text=&quot;Preload&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnBannerShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:backgroundTint=&quot;@color/demo_primary&quot;
+                        android:text=&quot;Show&quot;
+                        android:textColor=&quot;@color/demo_white&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnBannerLoadAndShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1.2&quot;
+                        android:backgroundTint=&quot;@color/demo_accent&quot;
+                        android:text=&quot;Load &amp;amp; Show&quot;
+                        android:textColor=&quot;@color/demo_black&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;wrap_content&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;ℹ️ Mẹo: Bấm [Preload] → [Show] để đưa banner vào khung bên dưới.&quot;
+                    android:textColor=&quot;#80FFFFFF&quot;
+                    android:textSize=&quot;10sp&quot; /&gt;
+
+                &lt;!-- Khung hiển thị Banner --&gt;
+                &lt;FrameLayout
+                    android:id=&quot;@+id/frBannerContainer&quot;
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:minHeight=&quot;50dp&quot;
+                    android:layout_marginTop=&quot;10dp&quot;
+                    android:background=&quot;#22252E&quot; /&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;!-- ===================== 2. NATIVE AD ===================== --&gt;
+            &lt;LinearLayout
+                android:layout_width=&quot;match_parent&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:orientation=&quot;vertical&quot;
+                android:background=&quot;@drawable/bg_demo_card&quot;
+                android:padding=&quot;14dp&quot;
+                android:layout_marginBottom=&quot;16dp&quot;&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:gravity=&quot;center_vertical&quot;&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;2. NATIVE AD&quot;
+                        android:textColor=&quot;@color/demo_text_primary&quot;
+                        android:textSize=&quot;15sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:layout_marginStart=&quot;8dp&quot;
+                        android:text=&quot;(key: native_collapse_custom)&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot; /&gt;
+
+                    &lt;View
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;1dp&quot;
+                        android:layout_weight=&quot;1&quot; /&gt;
+
+                    &lt;TextView
+                        android:id=&quot;@+id/tvNativeStatus&quot;
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;IDLE&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;📌 Vị trí: Chèn tự nhiên vào layout (Language, Intro Onboarding, Feeds). Có ảnh icon, tiêu đề và nút CTA cài đặt.&quot;
+                    android:textColor=&quot;@color/demo_text_secondary&quot;
+                    android:textSize=&quot;11sp&quot; /&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:layout_marginTop=&quot;10dp&quot;&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnNativeLoadOnly&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:text=&quot;Preload&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnNativeShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:backgroundTint=&quot;@color/demo_primary&quot;
+                        android:text=&quot;Show&quot;
+                        android:textColor=&quot;@color/demo_white&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnNativeLoadAndShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1.2&quot;
+                        android:backgroundTint=&quot;@color/demo_accent&quot;
+                        android:text=&quot;Load &amp;amp; Show&quot;
+                        android:textColor=&quot;@color/demo_black&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;wrap_content&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;ℹ️ Mẹo: Bấm [Preload] → [Show] hoặc [Load &amp;amp; Show] để render Native vào khung bên dưới.&quot;
+                    android:textColor=&quot;#80FFFFFF&quot;
+                    android:textSize=&quot;10sp&quot; /&gt;
+
+                &lt;!-- Khung hiển thị Native Ad --&gt;
+                &lt;FrameLayout
+                    android:id=&quot;@+id/frNativeContainer&quot;
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:minHeight=&quot;120dp&quot;
+                    android:layout_marginTop=&quot;10dp&quot;
+                    android:background=&quot;#22252E&quot; /&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;!-- ===================== 3. INTERSTITIAL AD ===================== --&gt;
+            &lt;LinearLayout
+                android:layout_width=&quot;match_parent&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:orientation=&quot;vertical&quot;
+                android:background=&quot;@drawable/bg_demo_card&quot;
+                android:padding=&quot;14dp&quot;
+                android:layout_marginBottom=&quot;16dp&quot;&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:gravity=&quot;center_vertical&quot;&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;3. INTERSTITIAL AD&quot;
+                        android:textColor=&quot;@color/demo_text_primary&quot;
+                        android:textSize=&quot;15sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:layout_marginStart=&quot;8dp&quot;
+                        android:text=&quot;(key: inter_home)&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot; /&gt;
+
+                    &lt;View
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;1dp&quot;
+                        android:layout_weight=&quot;1&quot; /&gt;
+
+                    &lt;TextView
+                        android:id=&quot;@+id/tvInterStatus&quot;
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;IDLE&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;📌 Vị trí: Toàn màn hình xuất hiện ngắt giữa các bước chuyển màn (hoàn thành task, chuyển tab). Có cooldown tránh spam.&quot;
+                    android:textColor=&quot;@color/demo_text_secondary&quot;
+                    android:textSize=&quot;11sp&quot; /&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:layout_marginTop=&quot;10dp&quot;&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnInterLoadOnly&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:text=&quot;Preload&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnInterShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:backgroundTint=&quot;@color/demo_primary&quot;
+                        android:text=&quot;Show&quot;
+                        android:textColor=&quot;@color/demo_white&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnInterLoadAndShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1.2&quot;
+                        android:backgroundTint=&quot;@color/demo_accent&quot;
+                        android:text=&quot;Load &amp;amp; Show&quot;
+                        android:textColor=&quot;@color/demo_black&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;wrap_content&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;ℹ️ Mẹo: Bấm [Show] để kiểm tra hiển thị full màn hình và callback onNextAction khi đóng.&quot;
+                    android:textColor=&quot;#80FFFFFF&quot;
+                    android:textSize=&quot;10sp&quot; /&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;!-- ===================== 4. REWARDED AD ===================== --&gt;
+            &lt;LinearLayout
+                android:layout_width=&quot;match_parent&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:orientation=&quot;vertical&quot;
+                android:background=&quot;@drawable/bg_demo_card&quot;
+                android:padding=&quot;14dp&quot;
+                android:layout_marginBottom=&quot;16dp&quot;&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:gravity=&quot;center_vertical&quot;&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;4. REWARDED AD&quot;
+                        android:textColor=&quot;@color/demo_text_primary&quot;
+                        android:textSize=&quot;15sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:layout_marginStart=&quot;8dp&quot;
+                        android:text=&quot;(key: reward_home)&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot; /&gt;
+
+                    &lt;View
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;1dp&quot;
+                        android:layout_weight=&quot;1&quot; /&gt;
+
+                    &lt;TextView
+                        android:id=&quot;@+id/tvRewardStatus&quot;
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;IDLE&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;📌 Vị trí: Video toàn màn hình người dùng chủ động xem để nhận quà/mở khóa VIP. Xem hết video để kích hoạt nhận Coin thưởng.&quot;
+                    android:textColor=&quot;@color/demo_text_secondary&quot;
+                    android:textSize=&quot;11sp&quot; /&gt;
+
+                &lt;TextView
+                    android:id=&quot;@+id/tvRewardCoinCount&quot;
+                    android:layout_width=&quot;wrap_content&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;🪙 Điểm thưởng: 0 Coins&quot;
+                    android:textColor=&quot;@color/demo_accent&quot;
+                    android:textSize=&quot;13sp&quot;
+                    android:textStyle=&quot;bold&quot; /&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:layout_marginTop=&quot;10dp&quot;&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnRewardLoadOnly&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:text=&quot;Preload&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnRewardShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:backgroundTint=&quot;@color/demo_primary&quot;
+                        android:text=&quot;Show&quot;
+                        android:textColor=&quot;@color/demo_white&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnRewardLoadAndShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1.2&quot;
+                        android:backgroundTint=&quot;@color/demo_accent&quot;
+                        android:text=&quot;Load &amp;amp; Show&quot;
+                        android:textColor=&quot;@color/demo_black&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;wrap_content&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;ℹ️ Mẹo: Xem hết video demo để nhận ngay +20 Coins (Preload) hoặc +50 Coins (Load &amp;amp; Show).&quot;
+                    android:textColor=&quot;#80FFFFFF&quot;
+                    android:textSize=&quot;10sp&quot; /&gt;
+            &lt;/LinearLayout&gt;
+
+            &lt;!-- ===================== 5. APP OPEN AD ===================== --&gt;
+            &lt;LinearLayout
+                android:layout_width=&quot;match_parent&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:orientation=&quot;vertical&quot;
+                android:background=&quot;@drawable/bg_demo_card&quot;
+                android:padding=&quot;14dp&quot;
+                android:layout_marginBottom=&quot;8dp&quot;&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:gravity=&quot;center_vertical&quot;&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;5. APP OPEN AD&quot;
+                        android:textColor=&quot;@color/demo_text_primary&quot;
+                        android:textSize=&quot;15sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;TextView
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:layout_marginStart=&quot;8dp&quot;
+                        android:text=&quot;(key: app_open_wcb)&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot; /&gt;
+
+                    &lt;View
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;1dp&quot;
+                        android:layout_weight=&quot;1&quot; /&gt;
+
+                    &lt;TextView
+                        android:id=&quot;@+id/tvAppOpenStatus&quot;
+                        android:layout_width=&quot;wrap_content&quot;
+                        android:layout_height=&quot;wrap_content&quot;
+                        android:text=&quot;IDLE&quot;
+                        android:textColor=&quot;@color/demo_text_secondary&quot;
+                        android:textSize=&quot;11sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;📌 Vị trí: Toàn màn hình khi khởi động app (Splash) hoặc từ background mở lại (Welcome Back). Có Suppressor bảo vệ màn nhạy cảm.&quot;
+                    android:textColor=&quot;@color/demo_text_secondary&quot;
+                    android:textSize=&quot;11sp&quot; /&gt;
+
+                &lt;LinearLayout
+                    android:layout_width=&quot;match_parent&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:orientation=&quot;horizontal&quot;
+                    android:layout_marginTop=&quot;10dp&quot;&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnAppOpenLoadOnly&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:text=&quot;Preload&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnAppOpenShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1&quot;
+                        android:layout_marginEnd=&quot;6dp&quot;
+                        android:backgroundTint=&quot;@color/demo_primary&quot;
+                        android:text=&quot;Show&quot;
+                        android:textColor=&quot;@color/demo_white&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+
+                    &lt;Button
+                        android:id=&quot;@+id/btnAppOpenLoadAndShow&quot;
+                        android:layout_width=&quot;0dp&quot;
+                        android:layout_height=&quot;44dp&quot;
+                        android:layout_weight=&quot;1.2&quot;
+                        android:backgroundTint=&quot;@color/demo_accent&quot;
+                        android:text=&quot;Load &amp;amp; Show&quot;
+                        android:textColor=&quot;@color/demo_black&quot;
+                        android:textSize=&quot;12sp&quot;
+                        android:textStyle=&quot;bold&quot; /&gt;
+                &lt;/LinearLayout&gt;
+
+                &lt;TextView
+                    android:layout_width=&quot;wrap_content&quot;
+                    android:layout_height=&quot;wrap_content&quot;
+                    android:layout_marginTop=&quot;6dp&quot;
+                    android:text=&quot;ℹ️ Mẹo: Bấm [Show] để kiểm tra giao diện mở app toàn màn hình.&quot;
+                    android:textColor=&quot;#80FFFFFF&quot;
+                    android:textSize=&quot;10sp&quot; /&gt;
+            &lt;/LinearLayout&gt;
+
+        &lt;/LinearLayout&gt;
+    &lt;/androidx.core.widget.NestedScrollView&gt;
+
+    &lt;!-- ===================== BOTTOM REAL-TIME LOG CONSOLE ===================== --&gt;
+    &lt;LinearLayout
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;250dp&quot;
+        android:orientation=&quot;vertical&quot;
+        android:background=&quot;@drawable/bg_demo_console&quot;
+        android:padding=&quot;12dp&quot;&gt;
+
+        &lt;!-- Console Header --&gt;
+        &lt;LinearLayout
+            android:layout_width=&quot;match_parent&quot;
+            android:layout_height=&quot;wrap_content&quot;
+            android:orientation=&quot;horizontal&quot;
+            android:gravity=&quot;center_vertical&quot;
+            android:paddingBottom=&quot;8dp&quot;&gt;
+
+            &lt;TextView
+                android:layout_width=&quot;wrap_content&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:text=&quot;🟢 REAL-TIME CONSOLE LOG&quot;
+                android:textColor=&quot;@color/demo_accent&quot;
+                android:textSize=&quot;13sp&quot;
+                android:textStyle=&quot;bold&quot; /&gt;
+
+            &lt;TextView
+                android:id=&quot;@+id/tvLogCount&quot;
+                android:layout_width=&quot;wrap_content&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:layout_marginStart=&quot;8dp&quot;
+                android:text=&quot;(0)&quot;
+                android:textColor=&quot;@color/demo_text_secondary&quot;
+                android:textSize=&quot;12sp&quot; /&gt;
+
+            &lt;View
+                android:layout_width=&quot;0dp&quot;
+                android:layout_height=&quot;1dp&quot;
+                android:layout_weight=&quot;1&quot; /&gt;
+
+            &lt;Button
+                android:id=&quot;@+id/btnClearLog&quot;
+                style=&quot;?attr/materialButtonOutlinedStyle&quot;
+                android:layout_width=&quot;wrap_content&quot;
+                android:layout_height=&quot;36dp&quot;
+                android:text=&quot;Xóa log&quot;
+                android:textColor=&quot;@color/demo_text_secondary&quot;
+                android:textSize=&quot;11sp&quot; /&gt;
+        &lt;/LinearLayout&gt;
+
+        &lt;!-- Log Content View --&gt;
+        &lt;ScrollView
+            android:id=&quot;@+id/scrollConsole&quot;
+            android:layout_width=&quot;match_parent&quot;
+            android:layout_height=&quot;match_parent&quot;
+            android:fillViewport=&quot;true&quot;&gt;
+
+            &lt;TextView
+                android:id=&quot;@+id/tvConsoleLog&quot;
+                android:layout_width=&quot;match_parent&quot;
+                android:layout_height=&quot;wrap_content&quot;
+                android:textColor=&quot;#39FF14&quot;
+                android:textSize=&quot;10sp&quot;
+                android:fontFamily=&quot;monospace&quot;
+                android:lineSpacingExtra=&quot;2dp&quot;
+                android:textIsSelectable=&quot;true&quot;
+                tools:text=&quot;[14:20:10.123] [SYSTEM] DemoAdsActivity khởi tạo thành công.&quot; /&gt;
+        &lt;/ScrollView&gt;
+    &lt;/LinearLayout&gt;
+
+&lt;/LinearLayout&gt;
+</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <h5>Bước 3: Tạo file mã nguồn DemoAdsActivity.kt</h5>
+      <p>Bấm mở rộng để xem hoặc nhấn nút <b>Copy</b> để sao chép toàn bộ code Kotlin điều khiển 5 Managers:</p>
+      <details class="faq" style="margin-bottom: 16px;">
+        <summary style="font-size: 14px; font-weight: bold; cursor: pointer; padding: 12px;">📂 Bấm để xem / copy toàn bộ mã nguồn: DemoAdsActivity.kt</summary>
+        <div class="faq__body" style="padding: 10px;">
+          <div class="code">
+            <div class="code__bar">
+              <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="code__file">DemoAdsActivity.kt</span>
+              <span class="code__tag">kotlin</span>
+              <button class="code__copy">Copy</button>
+            </div>
+<pre><code>package com.example.inv_lib_ads_default
+
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.ScrollView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.ignova.adsflow.core.tracker.AppTrackers
+import com.ignova.adsflow.core.tracker.TrackerEventListener
+import com.ignova.adsflow.manager.appopen.AdOpenManager
+import com.ignova.adsflow.manager.appopen.AppOpenAdPlacement
+import com.ignova.adsflow.manager.banner.AdBannerManager
+import com.ignova.adsflow.manager.banner.BannerAdPlacement
+import com.ignova.adsflow.manager.inter.AdInterManager
+import com.ignova.adsflow.manager.inter.InterAdPlacement
+import com.ignova.adsflow.manager.native.AdNativeManager
+import com.ignova.adsflow.manager.native.NativeAdPlacement
+import com.ignova.adsflow.manager.reward.AdRewardManager
+import com.ignova.adsflow.manager.reward.RewardAdPlacement
+import com.mobile.v1_ad_lib.ad_native.NativeAdListener
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+/**
+ * Activity demo kiểm thử toàn diện 5 loại quảng cáo của thư viện ads_flow:
+ * 1. Banner Ad (AdBannerManager)
+ * 2. Native Ad (AdNativeManager)
+ * 3. Interstitial Ad (AdInterManager)
+ * 4. Rewarded Video Ad (AdRewardManager)
+ * 5. App Open Ad (AdOpenManager)
+ *
+ * Mỗi loại quảng cáo đều được minh họa qua 2 cơ chế chuẩn hóa:
+ * - Preload (LOAD_ONLY): Nạp trước vào bộ nhớ đệm Placement, sau đó gọi show(...) không độ trễ.
+ * - LOAD_AND_SHOW: Tải về và tự động hiển thị ngay khi nạp xong.
+ *
+ * Màn hình tích hợp Real-time Console Log hứng toàn bộ sự kiện từ [AppTrackers]
+ * và callback trạng thái của từng loại quảng cáo để hỗ trợ QA/Developer kiểm thử.
+ */
+class DemoAdsActivity : AppCompatActivity() {
+
+    // === Ad Placements lưu trữ quảng cáo đã Preload ===
+    private var bannerPlacement: BannerAdPlacement? = null
+    private var nativePlacement: NativeAdPlacement? = null
+    private var interPlacement: InterAdPlacement? = null
+    private var rewardPlacement: RewardAdPlacement? = null
+    private var appOpenPlacement: AppOpenAdPlacement? = null
+
+    // === View References: Banner ===
+    private lateinit var tvBannerStatus: TextView
+    private lateinit var btnBannerLoadOnly: Button
+    private lateinit var btnBannerShow: Button
+    private lateinit var btnBannerLoadAndShow: Button
+    private lateinit var frBannerContainer: FrameLayout
+
+    // === View References: Native ===
+    private lateinit var tvNativeStatus: TextView
+    private lateinit var btnNativeLoadOnly: Button
+    private lateinit var btnNativeShow: Button
+    private lateinit var btnNativeLoadAndShow: Button
+    private lateinit var frNativeContainer: FrameLayout
+
+    // === View References: Interstitial ===
+    private lateinit var tvInterStatus: TextView
+    private lateinit var btnInterLoadOnly: Button
+    private lateinit var btnInterShow: Button
+    private lateinit var btnInterLoadAndShow: Button
+
+    // === View References: Reward ===
+    private lateinit var tvRewardStatus: TextView
+    private lateinit var tvRewardCoinCount: TextView
+    private lateinit var btnRewardLoadOnly: Button
+    private lateinit var btnRewardShow: Button
+    private lateinit var btnRewardLoadAndShow: Button
+    private var coinsEarned: Int = 0
+
+    // === View References: App Open ===
+    private lateinit var tvAppOpenStatus: TextView
+    private lateinit var btnAppOpenLoadOnly: Button
+    private lateinit var btnAppOpenShow: Button
+    private lateinit var btnAppOpenLoadAndShow: Button
+
+    // === View References: Console Log ===
+    private lateinit var tvLogCount: TextView
+    private lateinit var btnClearLog: Button
+    private lateinit var scrollConsole: ScrollView
+    private lateinit var tvConsoleLog: TextView
+    private var logCount: Int = 0
+
+    // Formatter thời gian hiển thị log
+    private val timeFormat = SimpleDateFormat(&quot;HH:mm:ss.SSS&quot;, Locale.getDefault())
+
+    // Listener lắng nghe sự kiện từ AppTrackers
+    @Suppress(&quot;DEPRECATION&quot;)
+    private val trackerListener = TrackerEventListener { name, bundle -&gt;
+        val params = bundle.keySet()?.joinToString(&quot;, &quot;) { key -&gt;
+            &quot;$key=${bundle.get(key)}&quot;
+        } ?: &quot;&quot;
+        val detail = if (params.isNotEmpty()) &quot;[$params]&quot; else &quot;&quot;
+        logMessage(&quot;📡 TRACKER&quot;, &quot;$name $detail&quot;)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_demo_ads)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootDemoAds)) { v, insets -&gt;
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        initViews()
+        initListeners()
+        logMessage(&quot;SYSTEM&quot;, &quot;DemoAdsActivity khởi tạo thành công. 5 Managers sẵn sàng.&quot;)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Đăng ký nhận real-time event từ AppTrackers
+        AppTrackers.addEventListener(trackerListener)
+    }
+
+    override fun onStop() {
+        // Hủy đăng ký listener để tránh rò rỉ bộ nhớ
+        AppTrackers.removeEventListener(trackerListener)
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        logMessage(&quot;SYSTEM&quot;, &quot;Giải phóng toàn bộ AdPlacements trong onDestroy()&quot;)
+        // Dọn dẹp thủ công toàn bộ placement (BaseAdPlacement cũng tự động giải phóng qua DefaultLifecycleObserver)
+        AdBannerManager.clearPlacement(bannerPlacement)
+        AdNativeManager.clearPlacement(nativePlacement)
+        AdInterManager.clearPlacement(interPlacement)
+        AdRewardManager.clearPlacement(rewardPlacement)
+        AdOpenManager.clearPlacement(appOpenPlacement)
+        super.onDestroy()
+    }
+
+    /**
+     * Ánh xạ các thành phần View từ layout XML.
+     */
+    private fun initViews() {
+        findViewById&lt;ImageView&gt;(R.id.btnBack).setOnClickListener { finish() }
+
+        // Banner
+        tvBannerStatus = findViewById(R.id.tvBannerStatus)
+        btnBannerLoadOnly = findViewById(R.id.btnBannerLoadOnly)
+        btnBannerShow = findViewById(R.id.btnBannerShow)
+        btnBannerLoadAndShow = findViewById(R.id.btnBannerLoadAndShow)
+        frBannerContainer = findViewById(R.id.frBannerContainer)
+
+        // Native
+        tvNativeStatus = findViewById(R.id.tvNativeStatus)
+        btnNativeLoadOnly = findViewById(R.id.btnNativeLoadOnly)
+        btnNativeShow = findViewById(R.id.btnNativeShow)
+        btnNativeLoadAndShow = findViewById(R.id.btnNativeLoadAndShow)
+        frNativeContainer = findViewById(R.id.frNativeContainer)
+
+        // Interstitial
+        tvInterStatus = findViewById(R.id.tvInterStatus)
+        btnInterLoadOnly = findViewById(R.id.btnInterLoadOnly)
+        btnInterShow = findViewById(R.id.btnInterShow)
+        btnInterLoadAndShow = findViewById(R.id.btnInterLoadAndShow)
+
+        // Reward
+        tvRewardStatus = findViewById(R.id.tvRewardStatus)
+        tvRewardCoinCount = findViewById(R.id.tvRewardCoinCount)
+        btnRewardLoadOnly = findViewById(R.id.btnRewardLoadOnly)
+        btnRewardShow = findViewById(R.id.btnRewardShow)
+        btnRewardLoadAndShow = findViewById(R.id.btnRewardLoadAndShow)
+
+        // App Open
+        tvAppOpenStatus = findViewById(R.id.tvAppOpenStatus)
+        btnAppOpenLoadOnly = findViewById(R.id.btnAppOpenLoadOnly)
+        btnAppOpenShow = findViewById(R.id.btnAppOpenShow)
+        btnAppOpenLoadAndShow = findViewById(R.id.btnAppOpenLoadAndShow)
+
+        // Console Log
+        tvLogCount = findViewById(R.id.tvLogCount)
+        btnClearLog = findViewById(R.id.btnClearLog)
+        scrollConsole = findViewById(R.id.scrollConsole)
+        tvConsoleLog = findViewById(R.id.tvConsoleLog)
+    }
+
+    /**
+     * Gán sự kiện click cho toàn bộ 15 nút điều khiển quảng cáo và console.
+     */
+    private fun initListeners() {
+        // Banner Events
+        btnBannerLoadOnly.setOnClickListener { loadBannerOnly() }
+        btnBannerShow.setOnClickListener { showBannerPreloaded() }
+        btnBannerLoadAndShow.setOnClickListener { loadAndShowBanner() }
+
+        // Native Events
+        btnNativeLoadOnly.setOnClickListener { loadNativeOnly() }
+        btnNativeShow.setOnClickListener { showNativePreloaded() }
+        btnNativeLoadAndShow.setOnClickListener { loadAndShowNative() }
+
+        // Interstitial Events
+        btnInterLoadOnly.setOnClickListener { loadInterOnly() }
+        btnInterShow.setOnClickListener { showInterPreloaded() }
+        btnInterLoadAndShow.setOnClickListener { loadAndShowInter() }
+
+        // Reward Events
+        btnRewardLoadOnly.setOnClickListener { loadRewardOnly() }
+        btnRewardShow.setOnClickListener { showRewardPreloaded() }
+        btnRewardLoadAndShow.setOnClickListener { loadAndShowReward() }
+
+        // App Open Events
+        btnAppOpenLoadOnly.setOnClickListener { loadAppOpenOnly() }
+        btnAppOpenShow.setOnClickListener { showAppOpenPreloaded() }
+        btnAppOpenLoadAndShow.setOnClickListener { loadAndShowAppOpen() }
+
+        // Console Clear
+        btnClearLog.setOnClickListener {
+            tvConsoleLog.text = &quot;&quot;
+            logCount = 0
+            tvLogCount.text = &quot;(0)&quot;
+            logMessage(&quot;CONSOLE&quot;, &quot;Đã xóa sạch log.&quot;)
+        }
+    }
+
+    // =========================================================================
+    // 1. BANNER AD METHODS
+    // =========================================================================
+
+    /**
+     * Preload Banner Ad (LOAD_ONLY): Nạp trước quảng cáo vào [bannerPlacement] mà chưa hiển thị.
+     * keyName: &quot;banner_all&quot;
+     */
+    private fun loadBannerOnly() {
+        logMessage(&quot;BANNER&quot;, &quot;Bắt đầu Preload Banner (key: banner_all)...&quot;)
+        updateStatus(tvBannerStatus, &quot;PRELOADING...&quot;, R.color.demo_accent)
+
+        bannerPlacement = AdBannerManager.loadOnly(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;banner_all&quot;
+        )
+        logMessage(&quot;BANNER&quot;, &quot;Placement đã được tạo: $bannerPlacement. Sẵn sàng bấm &#x27;Show&#x27;.&quot;)
+        updateStatus(tvBannerStatus, &quot;PRELOADED (READY)&quot;, R.color.demo_accent)
+    }
+
+    /**
+     * Hiển thị Banner đã Preload lên container.
+     */
+    private fun showBannerPreloaded() {
+        val placement = bannerPlacement
+        if (placement == null) {
+            logMessage(&quot;BANNER&quot;, &quot;⚠️ Chưa có Placement Preload! Hãy bấm &#x27;Preload&#x27; trước.&quot;)
+            Toast.makeText(this, &quot;⚠️ Banner chưa được Preload! Hãy bấm [Preload] trước.&quot;, Toast.LENGTH_SHORT).show()
+            return
+        }
+        logMessage(&quot;BANNER&quot;, &quot;Hiển thị Banner từ Preloaded Placement lên container...&quot;)
+        AdBannerManager.show(
+            placement = placement,
+            container = frBannerContainer,
+            lifecycle = lifecycle
+        )
+        updateStatus(tvBannerStatus, &quot;SHOWING&quot;, R.color.demo_accent)
+    }
+
+    /**
+     * Tải và hiển thị ngay Banner Ad (LOAD_AND_SHOW) lên container.
+     */
+    private fun loadAndShowBanner() {
+        logMessage(&quot;BANNER&quot;, &quot;Bắt đầu LOAD_AND_SHOW Banner...&quot;)
+        updateStatus(tvBannerStatus, &quot;LOADING &amp; SHOWING...&quot;, R.color.demo_accent)
+
+        bannerPlacement = AdBannerManager.loadAndShow(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;banner_all&quot;,
+            container = frBannerContainer
+        )
+        logMessage(&quot;BANNER&quot;, &quot;Đã gọi loadAndShow. Container đang nạp quảng cáo.&quot;)
+    }
+
+    // =========================================================================
+    // 2. NATIVE AD METHODS
+    // =========================================================================
+
+    /**
+     * Preload Native Ad (LOAD_ONLY): Nạp trước vào [nativePlacement] kèm lắng nghe trạng thái.
+     * keyName: &quot;native_splash&quot;
+     */
+    private fun loadNativeOnly() {
+        logMessage(&quot;NATIVE&quot;, &quot;Bắt đầu Preload Native Ad (key: native_splash)...&quot;)
+        updateStatus(tvNativeStatus, &quot;PRELOADING...&quot;, R.color.demo_accent)
+
+        nativePlacement = AdNativeManager.loadOnly(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;native_splash&quot;
+        )
+        logMessage(&quot;NATIVE&quot;, &quot;Placement Native đã được tạo: $nativePlacement. Sẵn sàng bấm &#x27;Show&#x27;.&quot;)
+        updateStatus(tvNativeStatus, &quot;PRELOADED (READY)&quot;, R.color.demo_accent)
+    }
+
+    /**
+     * Hiển thị Native Ad đã Preload lên [frNativeContainer].
+     */
+    private fun showNativePreloaded() {
+        val placement = nativePlacement
+        if (placement == null) {
+            logMessage(&quot;NATIVE&quot;, &quot;⚠️ Chưa có Native Placement! Hãy bấm &#x27;Preload&#x27; trước.&quot;)
+            Toast.makeText(this, &quot;⚠️ Native chưa được Preload! Hãy bấm [Preload] trước.&quot;, Toast.LENGTH_SHORT).show()
+            return
+        }
+        logMessage(&quot;NATIVE&quot;, &quot;Hiển thị Native Ad từ Preloaded Placement lên container...&quot;)
+        AdNativeManager.show(
+            placement = placement,
+            container = frNativeContainer,
+            lifecycle = lifecycle
+        )
+        updateStatus(tvNativeStatus, &quot;SHOWING&quot;, R.color.demo_accent)
+    }
+
+    /**
+     * Tải và hiển thị ngay Native Ad (LOAD_AND_SHOW) kèm callbacks chi tiết.
+     */
+    private fun loadAndShowNative() {
+        logMessage(&quot;NATIVE&quot;, &quot;Bắt đầu LOAD_AND_SHOW Native Ad...&quot;)
+        updateStatus(tvNativeStatus, &quot;LOADING &amp; SHOWING...&quot;, R.color.demo_accent)
+
+        nativePlacement = AdNativeManager.loadAndShow(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;native_splash&quot;,
+            container = frNativeContainer,
+            onAdLoaded = {
+                logMessage(&quot;NATIVE&quot;, &quot;✅ onAdLoaded: Native Ad hiển thị thành công!&quot;)
+                updateStatus(tvNativeStatus, &quot;LOADED &amp; DISPLAYED&quot;, R.color.demo_accent)
+            },
+            onAdFailed = {
+                logMessage(&quot;NATIVE&quot;, &quot;❌ onAdFailed: Tải Native thất bại hoặc bị chặn.&quot;)
+                updateStatus(tvNativeStatus, &quot;FAILED&quot;, R.color.demo_primary)
+            },
+            onAdClosed = {
+                logMessage(&quot;NATIVE&quot;, &quot;ℹ️ onAdClosed: Người dùng đóng Native Ad.&quot;)
+            },
+            listener = object : NativeAdListener {
+                override fun onAdImpression() {
+                    logMessage(&quot;NATIVE&quot;, &quot;👁️ Native Ad ghi nhận lượt Impression.&quot;)
+                }
+                override fun onAdClicked() {
+                    logMessage(&quot;NATIVE&quot;, &quot;👆 Native Ad ghi nhận lượt Click.&quot;)
+                }
+            }
+        )
+    }
+
+    // =========================================================================
+    // 3. INTERSTITIAL AD METHODS
+    // =========================================================================
+
+    /**
+     * Preload Interstitial Ad (LOAD_ONLY): Nạp trước vào [interPlacement].
+     * keyName: &quot;inter_home&quot;
+     */
+    private fun loadInterOnly() {
+        logMessage(&quot;INTER&quot;, &quot;Bắt đầu Preload Interstitial Ad (key: inter_home)...&quot;)
+        updateStatus(tvInterStatus, &quot;PRELOADING...&quot;, R.color.demo_accent)
+
+        interPlacement = AdInterManager.loadOnly(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;inter_home&quot;
+        )
+        logMessage(&quot;INTER&quot;, &quot;Placement Interstitial đã tạo: $interPlacement. Sẵn sàng bấm &#x27;Show&#x27;.&quot;)
+        updateStatus(tvInterStatus, &quot;PRELOADED (READY)&quot;, R.color.demo_accent)
+    }
+
+    /**
+     * Hiển thị Interstitial Ad đã Preload toàn màn hình.
+     */
+    private fun showInterPreloaded() {
+        val placement = interPlacement
+        if (placement == null) {
+            logMessage(&quot;INTER&quot;, &quot;⚠️ Chưa có Inter Placement! Hãy bấm &#x27;Preload&#x27; trước.&quot;)
+            Toast.makeText(this, &quot;⚠️ Interstitial chưa được Preload! Hãy bấm [Preload] trước.&quot;, Toast.LENGTH_SHORT).show()
+            return
+        }
+        logMessage(&quot;INTER&quot;, &quot;Hiển thị Interstitial Ad từ Preloaded Placement...&quot;)
+        AdInterManager.show(
+            placement = placement,
+            activity = this,
+            lifecycle = lifecycle,
+            onNextAction = {
+                logMessage(&quot;INTER&quot;, &quot;▶️ onNextAction kích hoạt (sau khi đóng ad hoặc interval chưa đủ).&quot;)
+                updateStatus(tvInterStatus, &quot;DISMISSED / COMPLETED&quot;, R.color.demo_accent)
+            }
+        )
+    }
+
+    /**
+     * Tải và hiển thị ngay Interstitial Ad (LOAD_AND_SHOW) toàn màn hình.
+     */
+    private fun loadAndShowInter() {
+        logMessage(&quot;INTER&quot;, &quot;Bắt đầu LOAD_AND_SHOW Interstitial Ad...&quot;)
+        updateStatus(tvInterStatus, &quot;LOADING &amp; SHOWING...&quot;, R.color.demo_accent)
+
+        interPlacement = AdInterManager.loadAndShow(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;inter_home&quot;,
+            onNextAction = {
+                logMessage(&quot;INTER&quot;, &quot;▶️ onNextAction kích hoạt sau khi xem Inter.&quot;)
+                updateStatus(tvInterStatus, &quot;COMPLETED&quot;, R.color.demo_accent)
+            }
+        )
+    }
+
+    // =========================================================================
+    // 4. REWARDED VIDEO AD METHODS
+    // =========================================================================
+
+    /**
+     * Preload Rewarded Ad (LOAD_ONLY): Nạp trước video trả thưởng vào [rewardPlacement].
+     * keyName: &quot;reward_home&quot;
+     */
+    private fun loadRewardOnly() {
+        logMessage(&quot;REWARD&quot;, &quot;Bắt đầu Preload Rewarded Video Ad (key: reward_home)...&quot;)
+        updateStatus(tvRewardStatus, &quot;PRELOADING...&quot;, R.color.demo_accent)
+
+        rewardPlacement = AdRewardManager.loadOnly(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;reward_home&quot;
+        )
+        logMessage(&quot;REWARD&quot;, &quot;Placement Rewarded đã tạo: $rewardPlacement. Sẵn sàng bấm &#x27;Show&#x27;.&quot;)
+        updateStatus(tvRewardStatus, &quot;PRELOADED (READY)&quot;, R.color.demo_accent)
+    }
+
+    /**
+     * Hiển thị Rewarded Video Ad đã Preload và xử lý trao thưởng.
+     */
+    private fun showRewardPreloaded() {
+        val placement = rewardPlacement
+        if (placement == null) {
+            logMessage(&quot;REWARD&quot;, &quot;⚠️ Chưa có Reward Placement! Hãy bấm &#x27;Preload&#x27; trước.&quot;)
+            Toast.makeText(this, &quot;⚠️ Rewarded chưa được Preload! Hãy bấm [Preload] trước.&quot;, Toast.LENGTH_SHORT).show()
+            return
+        }
+        logMessage(&quot;REWARD&quot;, &quot;Hiển thị Rewarded Video Ad từ Preloaded Placement...&quot;)
+        AdRewardManager.show(
+            placement = placement,
+            activity = this,
+            lifecycle = lifecycle,
+            onUserEarnedReward = {
+                coinsEarned += 20
+                tvRewardCoinCount.text = &quot;🪙 Điểm thưởng: $coinsEarned Coins&quot;
+                Toast.makeText(this, &quot;🎉 Nhận +20 Coins thưởng!&quot;, Toast.LENGTH_SHORT).show()
+                logMessage(&quot;REWARD&quot;, &quot;🎁 onUserEarnedReward: Chúc mừng! Đã nhận +20 Coins (Tổng: $coinsEarned)&quot;)
+            },
+            onNextAction = {
+                logMessage(&quot;REWARD&quot;, &quot;ℹ️ onNextAction: Đóng video trả thưởng.&quot;)
+                updateStatus(tvRewardStatus, &quot;CLOSED&quot;, R.color.demo_text_secondary)
+            }
+        )
+    }
+
+    /**
+     * Tải và hiển thị ngay Rewarded Video Ad (LOAD_AND_SHOW) kèm trao thưởng.
+     */
+    private fun loadAndShowReward() {
+        logMessage(&quot;REWARD&quot;, &quot;Bắt đầu LOAD_AND_SHOW Rewarded Video Ad...&quot;)
+        updateStatus(tvRewardStatus, &quot;LOADING &amp; SHOWING...&quot;, R.color.demo_accent)
+
+        rewardPlacement = AdRewardManager.loadAndShow(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;reward_home&quot;,
+            onUserEarnedReward = {
+                coinsEarned += 50
+                tvRewardCoinCount.text = &quot;🪙 Điểm thưởng: $coinsEarned Coins&quot;
+                Toast.makeText(this, &quot;🎉 Nhận +50 Coins thưởng!&quot;, Toast.LENGTH_SHORT).show()
+                logMessage(&quot;REWARD&quot;, &quot;🎁 onUserEarnedReward: Nhận +50 Coins từ LOAD_AND_SHOW (Tổng: $coinsEarned)&quot;)
+            },
+            onNextAction = {
+                logMessage(&quot;REWARD&quot;, &quot;ℹ️ onNextAction: Video đóng.&quot;)
+                updateStatus(tvRewardStatus, &quot;CLOSED&quot;, R.color.demo_text_secondary)
+            }
+        )
+    }
+
+    // =========================================================================
+    // 5. APP OPEN AD METHODS
+    // =========================================================================
+
+    /**
+     * Preload App Open Ad (LOAD_ONLY): Nạp trước vào [appOpenPlacement].
+     * keyName: &quot;app_open_wcb&quot;
+     */
+    private fun loadAppOpenOnly() {
+        logMessage(&quot;APPOPEN&quot;, &quot;Bắt đầu Preload App Open Ad (key: app_open_wcb)...&quot;)
+        updateStatus(tvAppOpenStatus, &quot;PRELOADING...&quot;, R.color.demo_accent)
+
+        appOpenPlacement = AdOpenManager.loadOnly(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;app_open_wcb&quot;
+        )
+        logMessage(&quot;APPOPEN&quot;, &quot;Placement App Open đã tạo: $appOpenPlacement. Sẵn sàng bấm &#x27;Show&#x27;.&quot;)
+        updateStatus(tvAppOpenStatus, &quot;PRELOADED (READY)&quot;, R.color.demo_accent)
+    }
+
+    /**
+     * Hiển thị App Open Ad đã Preload toàn màn hình.
+     */
+    private fun showAppOpenPreloaded() {
+        val placement = appOpenPlacement
+        if (placement == null) {
+            logMessage(&quot;APPOPEN&quot;, &quot;⚠️ Chưa có App Open Placement! Hãy bấm &#x27;Preload&#x27; trước.&quot;)
+            Toast.makeText(this, &quot;⚠️ App Open chưa được Preload! Hãy bấm [Preload] trước.&quot;, Toast.LENGTH_SHORT).show()
+            return
+        }
+        logMessage(&quot;APPOPEN&quot;, &quot;Hiển thị App Open Ad từ Preloaded Placement...&quot;)
+        AdOpenManager.show(
+            placement = placement,
+            activity = this,
+            lifecycle = lifecycle,
+            onNextAction = {
+                logMessage(&quot;APPOPEN&quot;, &quot;▶️ onNextAction: App Open đã kết thúc hoặc đóng.&quot;)
+                updateStatus(tvAppOpenStatus, &quot;DISMISSED&quot;, R.color.demo_accent)
+            }
+        )
+    }
+
+    /**
+     * Tải và hiển thị ngay App Open Ad (LOAD_AND_SHOW) toàn màn hình.
+     */
+    private fun loadAndShowAppOpen() {
+        logMessage(&quot;APPOPEN&quot;, &quot;Bắt đầu LOAD_AND_SHOW App Open Ad...&quot;)
+        updateStatus(tvAppOpenStatus, &quot;LOADING &amp; SHOWING...&quot;, R.color.demo_accent)
+
+        appOpenPlacement = AdOpenManager.loadAndShow(
+            context = this,
+            lifecycle = lifecycle,
+            keyName = &quot;app_open_wcb&quot;,
+            onNextAction = {
+                logMessage(&quot;APPOPEN&quot;, &quot;▶️ onNextAction sau LOAD_AND_SHOW hoàn tất.&quot;)
+                updateStatus(tvAppOpenStatus, &quot;COMPLETED&quot;, R.color.demo_accent)
+            }
+        )
+    }
+
+    // =========================================================================
+    // HELPER METHODS: LOGGING &amp; UI UPDATE
+    // =========================================================================
+
+    /**
+     * Đẩy dòng log ra khung Console hiển thị ở nửa dưới màn hình kèm timestamp chính xác.
+     */
+    private fun logMessage(tag: String, message: String) {
+        val time = timeFormat.format(Date())
+        val logLine = &quot;[$time] [$tag] $message\n&quot;
+
+        runOnUiThread {
+            logCount++
+            tvLogCount.text = &quot;($logCount)&quot;
+            tvConsoleLog.append(logLine)
+            scrollConsole.post {
+                scrollConsole.fullScroll(View.FOCUS_DOWN)
+            }
+        }
+    }
+
+    /**
+     * Cập nhật badge trạng thái của từng loại quảng cáo.
+     */
+    private fun updateStatus(textView: TextView, text: String, colorRes: Int) {
+        runOnUiThread {
+            textView.text = text
+            textView.setTextColor(ContextCompat.getColor(this, colorRes))
+        }
+    }
+}
+</code></pre>
+          </div>
+        </div>
+      </details>
+
+      <h5>Bước 4: Mở màn hình Demo từ bất kỳ Activity / Fragment nào</h5>
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">Mở màn hình DemoAdsActivity</span>
+          <span class="code__tag">kotlin</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>startActivity(Intent(this, DemoAdsActivity::class.java))</code></pre>
       </div>
 
       <div class="code">
