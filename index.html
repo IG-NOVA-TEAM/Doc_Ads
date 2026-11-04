@@ -990,6 +990,16 @@ dependencies {
             <span class="annot__default">mặc định: null</span>
           </div>
         </div>
+
+        <div class="annot__row">
+          <div class="annot__code">val fontRes: Int?<br>val fontBoldRes: Int?</div>
+          <div class="annot__note">
+            <p><b>Đồng bộ font chữ toàn cục (Typography):</b> Cung cấp font resource từ app để đồng bộ giao diện thư viện với app chính.</p>
+            <p>• <code>fontRes</code>: <code>@FontRes</code> font tiêu chuẩn (regular / medium) áp dụng cho toàn bộ TextView của Ads Flow.</p>
+            <p>• <code>fontBoldRes</code>: <code>@FontRes</code> font đậm (bold / semibold) áp dụng cho các item được chọn hoặc tiêu đề nổi bật.</p>
+            <span class="annot__default">mặc định: null (dùng font mặc định của thư viện)</span>
+          </div>
+        </div>
       </div>
 
       <h3>4.2. Bảy nhóm cấu hình UI</h3>
@@ -1141,6 +1151,24 @@ dependencies {
             <span class="annot__default">mặc định: emptyList()</span>
           </div>
         </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub1FontRes / appNameSub2FontRes</div>
+          <div class="annot__note">
+            <p>Font chữ riêng cho dòng tên app 1 và dòng tên app 2 trên màn Splash.</p>
+            <p><code>@FontRes</code> — ví dụ <code>R.font.manrope_bold</code>, <code>R.font.manrope_regular</code>.</p>
+            <span class="annot__default">mặc định: null (kế thừa fontRes của Splash / AdsFlowConfig)</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">containAdsFontRes / fontRes</div>
+          <div class="annot__note">
+            <p><code>containAdsFontRes</code>: Font riêng cho dòng chữ "Chứa quảng cáo".</p>
+            <p><code>fontRes</code>: Font mặc định cấp màn hình áp dụng cho tất cả TextView trong SplashActivity.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
       </div>
 
       <div class="code">
@@ -1228,6 +1256,15 @@ dependencies {
             <span class="annot__default">mặc định: null</span>
           </div>
         </div>
+
+        <div class="annot__row">
+          <div class="annot__code">titleFontRes / fontRes</div>
+          <div class="annot__note">
+            <p><code>titleFontRes</code>: Font riêng cho tiêu đề màn chọn ngôn ngữ.</p>
+            <p><code>fontRes</code>: Font mặc định cấp màn hình cho Language (fallback về <code>AdsFlowConfig.fontRes</code>).</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
       </div>
 
       <!-- 5.3 LanguageItemUiConfig -->
@@ -1300,6 +1337,14 @@ dependencies {
         <div class="annot__row">
           <div class="annot__code">bgSelectedRes / bgUnselectedRes</div>
           <div class="annot__note"><p>Nền của dòng khi được chọn và khi chưa chọn. Dùng drawable bo góc để làm nổi dòng đang chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">fontSelectedRes / fontUnselectedRes</div>
+          <div class="annot__note">
+            <p>Font chữ cho dòng ngôn ngữ khi được chọn (<code>fontSelectedRes</code>, tự động kế thừa <code>fontBoldRes</code>) và khi chưa chọn (<code>fontUnselectedRes</code>, tự động kế thừa <code>fontRes</code>).</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
         </div>
       </div>
 
@@ -1377,6 +1422,23 @@ dependencies {
           <div class="annot__note">
             <p>Cho phép vuốt ngang qua các trang hay không.</p>
             <p><code>true</code> → dùng ViewPager vuốt được. <code>false</code> → chuyển trang bằng nút. <code>null</code> → thư viện tự quyết định.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnNextFontRes / fontRes</div>
+          <div class="annot__note">
+            <p><code>btnNextFontRes</code>: Font cho nút Next / Get Started.</p>
+            <p><code>fontRes</code>: Font mặc định cấp màn hình áp dụng cho toàn bộ text của Intro.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">itemTitleFontRes / itemContentFontRes</div>
+          <div class="annot__note">
+            <p>Font chữ cho tiêu đề (<code>itemTitleFontRes</code>) và mô tả (<code>itemContentFontRes</code>) của từng trang onboarding.</p>
             <span class="annot__default">mặc định: null</span>
           </div>
         </div>
@@ -1470,6 +1532,22 @@ dependencies {
         <div class="annot__row">
           <div class="annot__code">btnContinueTextColor / btnContinueTextColorRes</div>
           <div class="annot__note"><p>Màu chữ nút tiếp tục.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub1FontRes / appNameSub2FontRes</div>
+          <div class="annot__note">
+            <p>Font chữ cho dòng tên app 1 và dòng tên app 2 trên màn chào mừng.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">titleFontRes / contentFontRes / btnContinueFontRes / fontRes</div>
+          <div class="annot__note">
+            <p>Font cho tiêu đề (<code>titleFontRes</code>), nội dung mô tả (<code>contentFontRes</code>), nút tiếp tục (<code>btnContinueFontRes</code>) và font mặc định cấp màn hình (<code>fontRes</code>).</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
         </div>
       </div>
 
@@ -1579,13 +1657,21 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">btnTryAgainBackgroundRes</div>
-          <div class="annot__note"><p>Drawable nền nút thử lại.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">btnTryAgainBackgroundRes / btnTryAgainBackgroundDrawable</div>
+          <div class="annot__note"><p>Drawable nền nút thử lại. Hỗ trợ toàn diện gradient drawable resource (khi không truyền tint, thư viện tự động bỏ tint để gradient hiển thị trọn vẹn).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
           <div class="annot__code">btnTryAgainBackgroundTint / btnTryAgainBackgroundTintRes</div>
-          <div class="annot__note"><p>Màu tô cho nền nút — dùng khi nền là shape drawable mà bạn muốn đổi màu theo theme.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__note"><p>Màu tô cho nền nút — chỉ dùng khi muốn tint màu đơn sắc đè lên background; để null khi dùng gradient.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">headerTitleFontRes / titleFontRes / descriptionFontRes / btnTryAgainFontRes / fontRes</div>
+          <div class="annot__note">
+            <p>Font chữ riêng cho từng thành phần: header (<code>headerTitleFontRes</code>), tiêu đề (<code>titleFontRes</code>), mô tả (<code>descriptionFontRes</code>), nút thử lại (<code>btnTryAgainFontRes</code>) và font mặc định toàn màn (<code>fontRes</code>).</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
         </div>
       </div>
 
@@ -1622,6 +1708,26 @@ dependencies {
           <div class="annot__code">progressTint / progressTintRes</div>
           <div class="annot__note"><p>Màu của vòng xoay loading trong hộp thoại.</p><span class="annot__default">mặc định: null</span></div>
         </div>
+
+        <div class="annot__row">
+          <div class="annot__code">titleFontRes / contentFontRes / fontRes</div>
+          <div class="annot__note">
+            <p>Font chữ cho tiêu đề dialog (<code>titleFontRes</code>), nội dung mô tả (<code>contentFontRes</code>) và font mặc định dialog (<code>fontRes</code>).</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <p class="note__title">🔤 Đồng bộ Font chữ (Typography) giữa App và Ads Flow</p>
+        <p>
+          Để toàn bộ văn bản trong thư viện Ads Flow hiển thị đúng nhận diện thương hiệu và font chữ của app, bạn có thể truyền font ở 3 cấp độ linh hoạt:
+        </p>
+        <p>
+          1. <b>Cấp toàn cục (Toàn flow):</b> Đặt <code>fontRes = R.font.your_font_regular</code> và <code>fontBoldRes = R.font.your_font_bold</code> trực tiếp tại gốc <code>AdsFlowConfig(...)</code>. Tất cả các màn hình Splash, Language, Intro, WelcomeBack, NoInternet và Dialog sẽ tự động áp dụng font đồng bộ.<br>
+          2. <b>Cấp màn hình:</b> Đặt <code>fontRes</code> trong từng UI config (ví dụ <code>SplashUiConfig(fontRes = ...)</code>).<br>
+          3. <b>Cấp View cụ thể:</b> Tùy biến chi tiết như <code>appNameSub1FontRes</code>, <code>titleFontRes</code>, <code>fontSelectedRes</code>, <code>itemTitleFontRes</code>, <code>btnTryAgainFontRes</code>...
+        </p>
       </div>
 
       <div class="note">
