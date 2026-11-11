@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ads Flow — Hướng dẫn tích hợp cho app Android</title>
 <meta name="description" content="Tài liệu tích hợp thư viện Ads Flow (com.ignova:ads-flow-normal) cho app Android: cấu hình Maven, AdsFlowConfig, Remote Config, 5 loại quảng cáo và xử lý sự cố.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/guide.css">
 </head>
 <body>
@@ -35,6 +36,7 @@
       <a class="nav-link" href="#application"><span class="nav-link__num">3</span>Lớp Application</a>
       <a class="nav-link" href="#adsflowconfig"><span class="nav-link__num">4</span>AdsFlowConfig</a>
       <a class="nav-link" href="#uiconfig"><span class="nav-link__num">5</span>Cấu hình UI</a>
+      <a class="nav-link" href="#native-ui"><span class="nav-link__num">5.8</span>Native: màu &amp; font</a>
       <a class="nav-link" href="#resume"><span class="nav-link__num">6</span>App Open &amp; WelcomeBack</a>
       <a class="nav-link" href="#language"><span class="nav-link__num">7</span>Đa ngôn ngữ</a>
       <a class="nav-link" href="#iab"><span class="nav-link__num">8</span>Tắt quảng cáo (IAP)</a>
@@ -995,7 +997,7 @@ dependencies {
           <div class="annot__code">val fontRes: Int?<br>val fontBoldRes: Int?</div>
           <div class="annot__note">
             <p><b>Đồng bộ font chữ toàn cục (Typography):</b> Cung cấp font resource từ app để đồng bộ giao diện thư viện với app chính.</p>
-            <p>• <code>fontRes</code>: <code>@FontRes</code> font tiêu chuẩn (regular / medium) áp dụng cho toàn bộ TextView của Ads Flow.</p>
+            <p>• <code>fontRes</code>: <code>@FontRes</code> font tiêu chuẩn (regular / medium) áp dụng cho UI các màn flow. Template Native dùng <a href="#native-ui">resource/style Native</a>.</p>
             <p>• <code>fontBoldRes</code>: <code>@FontRes</code> font đậm (bold / semibold) áp dụng cho các item được chọn hoặc tiêu đề nổi bật.</p>
             <span class="annot__default">mặc định: null (dùng font mặc định của thư viện)</span>
           </div>
@@ -1067,18 +1069,34 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">backgroundRes: Int?</div>
+          <div class="annot__code">backgroundRes / backgroundDrawable</div>
           <div class="annot__note">
-            <p>Nền của màn Splash — thường là ảnh full-bleed. Nếu bỏ trống, màn dùng nền mặc định của thư viện.</p>
-            <p><code>DrawableRes</code> — truyền <code>R.drawable.bg_splash</code>.</p>
+            <p>Nền của màn Splash — thường là ảnh hoặc gradient full-bleed. Nếu bỏ trống, màn dùng nền mặc định của thư viện.</p>
+            <p>Truyền <code>backgroundRes = R.drawable.bg_splash</code> hoặc trực tiếp <code>backgroundDrawable = ...</code>.</p>
             <span class="annot__default">mặc định: null</span>
           </div>
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">logoRes: Int?</div>
+          <div class="annot__code">backgroundColor / backgroundColorRes</div>
           <div class="annot__note">
-            <p>Logo app hiển thị giữa màn Splash.</p>
+            <p>Màu nền đơn sắc nếu không dùng drawable ảnh.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundTint / backgroundTintRes</div>
+          <div class="annot__note">
+            <p>Màu tô phủ (tint) cho background của màn hình.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">logoRes / logoDrawable</div>
+          <div class="annot__note">
+            <p>Logo app hiển thị giữa màn Splash. Hỗ trợ resource id hoặc Drawable object trực tiếp.</p>
             <span class="annot__default">mặc định: null</span>
           </div>
         </div>
@@ -1093,9 +1111,25 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">appNameSub1SizeSp / appNameSub1SizeDimenRes</div>
+          <div class="annot__note">
+            <p>Cỡ chữ cho dòng tên app thứ nhất. Hỗ trợ giá trị sp trực tiếp (<code>24f</code>) hoặc dimension resource (<code>R.dimen.sizesp24</code>). Bỏ trống dùng cỡ mặc định XML.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">appNameSub2 / appNameSub2Res</div>
           <div class="annot__note">
             <p>Dòng phụ thứ hai — thường là tagline hoặc mô tả ngắn.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub2SizeSp / appNameSub2SizeDimenRes</div>
+          <div class="annot__note">
+            <p>Cỡ chữ cho dòng tagline thứ hai (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p>
             <span class="annot__default">mặc định: null</span>
           </div>
         </div>
@@ -1131,6 +1165,14 @@ dependencies {
           <div class="annot__note">
             <p>Dòng chữ thông báo "Nội dung này có thể chứa quảng cáo".</p>
             <p>Bắt buộc với app phát hành tại một số thị trường — nên dùng biến thể <code>Res</code> để đa ngôn ngữ.</p>
+            <span class="annot__default">mặc định: null</span>
+          </div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">containAdsTextSizeSp / containAdsTextSizeDimenRes</div>
+          <div class="annot__note">
+            <p>Cỡ chữ cho dòng thông báo chứa quảng cáo (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>11f</code> hoặc <code>R.dimen.sizesp11</code>).</p>
             <span class="annot__default">mặc định: null</span>
           </div>
         </div>
@@ -1210,8 +1252,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">backgroundRes: Int?</div>
-          <div class="annot__note"><p>Nền màn chọn ngôn ngữ.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">backgroundRes / backgroundDrawable</div>
+          <div class="annot__note"><p>Nền màn chọn ngôn ngữ — hỗ trợ cả Resource ID và Drawable trực tiếp.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundColor / backgroundColorRes</div>
+          <div class="annot__note"><p>Màu nền đơn sắc nếu không dùng background drawable.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundTint / backgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho background của màn chọn ngôn ngữ.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1225,13 +1277,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">iconDoneRes / iconDoneTint / iconDoneTintRes</div>
-          <div class="annot__note"><p>Nút "Xong" ở góc trên: icon gốc và màu tô cho icon (thường là icon vector nên cần tint).</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">titleSizeSp / titleSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho tiêu đề màn chọn ngôn ngữ (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>18f</code> hoặc <code>R.dimen.sizesp18</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">iconBackRes / iconBackTint / iconBackTintRes</div>
-          <div class="annot__note"><p>Nút quay lại.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">iconDoneRes / iconDoneDrawable / iconDoneTint / iconDoneTintRes</div>
+          <div class="annot__note"><p>Nút "Xong" ở góc trên: icon (resource hoặc Drawable) và màu tô cho icon.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconBackRes / iconBackDrawable / iconBackTint / iconBackTintRes</div>
+          <div class="annot__note"><p>Nút quay lại: icon (resource hoặc Drawable) và màu tô cho icon.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1292,6 +1349,11 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">textSizeSp / textSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho tên ngôn ngữ chính trong từng dòng item (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>16f</code> hoặc <code>R.dimen.sizesp16</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">subtextSelectedColor / subtextSelectedColorRes</div>
           <div class="annot__note"><p>Màu dòng phụ (tên quốc gia / vùng lãnh thổ) khi dòng đã chọn.</p><span class="annot__default">mặc định: null</span></div>
         </div>
@@ -1299,6 +1361,11 @@ dependencies {
         <div class="annot__row">
           <div class="annot__code">subtextUnselectedColor / subtextUnselectedColorRes</div>
           <div class="annot__note"><p>Màu dòng phụ khi dòng chưa chọn.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">subtextSizeSp / subtextSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho dòng phụ của item ngôn ngữ (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>13f</code> hoặc <code>R.dimen.sizesp13</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1312,18 +1379,23 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">iconArrowRes / iconArrowTint / iconArrowTintRes</div>
-          <div class="annot__note"><p>Icon mũi tên chỉ báo dòng này có thể mở rộng, và màu tô cho icon đó.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">childTextSizeSp / childTextSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho danh sách các quốc gia con khi mở rộng nhánh (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">iconSelectRes / iconSelectTint / iconSelectTintRes</div>
-          <div class="annot__note"><p>Icon dấu tick khi dòng đang được chọn.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">iconArrowRes / iconArrowDrawable / iconArrowTint / iconArrowTintRes</div>
+          <div class="annot__note"><p>Icon mũi tên chỉ báo dòng này có thể mở rộng (hỗ trợ Drawable) và màu tô cho icon đó.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">iconUnselectRes / iconUnselectTint / iconUnselectTintRes</div>
-          <div class="annot__note"><p>Icon radio tròn cho dòng chưa chọn.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">iconSelectRes / iconSelectDrawable / iconSelectTint / iconSelectTintRes</div>
+          <div class="annot__note"><p>Icon dấu tick khi dòng đang được chọn (hỗ trợ Drawable) và màu tint.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconUnselectRes / iconUnselectDrawable / iconUnselectTint / iconUnselectTintRes</div>
+          <div class="annot__note"><p>Icon radio tròn cho dòng chưa chọn (hỗ trợ Drawable) và màu tint.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1335,8 +1407,13 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">bgSelectedRes / bgUnselectedRes</div>
-          <div class="annot__note"><p>Nền của dòng khi được chọn và khi chưa chọn. Dùng drawable bo góc để làm nổi dòng đang chọn.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">bgSelectedRes / bgSelectedDrawable / bgSelectedColor / bgSelectedColorRes / bgSelectedTint / bgSelectedTintRes</div>
+          <div class="annot__note"><p>Nền của item ngôn ngữ khi đang được chọn. Hỗ trợ đầy đủ drawable resource, Drawable object, màu đơn sắc và màu tint.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">bgUnselectedRes / bgUnselectedDrawable / bgUnselectedColor / bgUnselectedColorRes / bgUnselectedTint / bgUnselectedTintRes</div>
+          <div class="annot__note"><p>Nền của item ngôn ngữ khi chưa được chọn.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1373,8 +1450,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">backgroundRes: Int?</div>
-          <div class="annot__note"><p>Nền chung của màn onboarding.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">backgroundRes / backgroundDrawable</div>
+          <div class="annot__note"><p>Nền chung của màn onboarding — hỗ trợ ảnh Resource hoặc Drawable object.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundColor / backgroundColorRes</div>
+          <div class="annot__note"><p>Màu nền đơn sắc nếu không dùng background drawable.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundTint / backgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho background của màn onboarding.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1394,7 +1481,22 @@ dependencies {
 
         <div class="annot__row">
           <div class="annot__code">btnNextTextColor / btnNextTextColorRes</div>
-          <div class="annot__note"><p>Màu chữ nút.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__note"><p>Màu chữ nút Next / Get Started.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnNextSizeSp / btnNextSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho nút Next / Get Started (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>16f</code> hoặc <code>R.dimen.sizesp16</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnNextBackgroundRes / btnNextBackgroundDrawable</div>
+          <div class="annot__note"><p>Nền của nút Next / Get Started (shape bo góc, gradient...).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnNextBackgroundTint / btnNextBackgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho nền của nút Next.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1413,8 +1515,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">itemTitleSizeSp / itemTitleSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho tiêu đề trang onboarding (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>20f</code> hoặc <code>R.dimen.sizesp20</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">itemContentColor / itemContentColorRes</div>
           <div class="annot__note"><p>Màu mô tả của mỗi trang onboarding.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">itemContentSizeSp / itemContentSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho nội dung mô tả của mỗi trang onboarding (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1490,13 +1602,28 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">illustrationRes: Int?</div>
-          <div class="annot__note"><p>Ảnh minh hoạ chính của màn (Drawable/Vector resource).</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">backgroundRes / backgroundDrawable</div>
+          <div class="annot__note"><p>Nền màn chào mừng — hỗ trợ ảnh resource hoặc Drawable object.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">backgroundRes / logoRes</div>
-          <div class="annot__note"><p>Nền và logo app trên màn chào mừng.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">backgroundColor / backgroundColorRes</div>
+          <div class="annot__note"><p>Màu nền đơn sắc nếu không dùng background ảnh.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundTint / backgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho nền màn chào mừng.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">logoRes / logoDrawable</div>
+          <div class="annot__note"><p>Logo app trên màn chào mừng.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">illustrationRes / illustrationDrawable</div>
+          <div class="annot__note"><p>Ảnh minh hoạ chính của màn (Resource ID hoặc Drawable object trực tiếp).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1505,8 +1632,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">appNameSub1SizeSp / appNameSub1SizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho dòng tên app 1 (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>24f</code> hoặc <code>R.dimen.sizesp24</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">appNameSub2 / appNameSub2Res</div>
           <div class="annot__note"><p>Dòng phụ thứ hai (tagline hoặc mô tả ngắn).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">appNameSub2SizeSp / appNameSub2SizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho dòng tagline 2 (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1520,8 +1657,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">titleSizeSp / titleSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho tiêu đề màn chào mừng (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>20f</code> hoặc <code>R.dimen.sizesp20</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">content / contentRes / contentColor / contentColorRes</div>
           <div class="annot__note"><p>Nội dung mô tả bên dưới tiêu đề — nơi phù hợp để giới thiệu tính năng mới.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">contentSizeSp / contentSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho nội dung mô tả (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1532,6 +1679,21 @@ dependencies {
         <div class="annot__row">
           <div class="annot__code">btnContinueTextColor / btnContinueTextColorRes</div>
           <div class="annot__note"><p>Màu chữ nút tiếp tục.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnContinueSizeSp / btnContinueSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho nút tiếp tục (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>16f</code> hoặc <code>R.dimen.sizesp16</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnContinueBackgroundRes / btnContinueBackgroundDrawable</div>
+          <div class="annot__note"><p>Nền của nút tiếp tục (shape bo góc, gradient drawable...).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnContinueBackgroundTint / btnContinueBackgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho nền nút tiếp tục.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1582,8 +1744,8 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">backgroundRes: Int?</div>
-          <div class="annot__note"><p>Nền màn quảng cáo full-screen.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">backgroundRes / backgroundDrawable</div>
+          <div class="annot__note"><p>Nền màn quảng cáo full-screen (ảnh resource hoặc Drawable trực tiếp).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1592,13 +1754,38 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">backgroundTint / backgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho nền màn native full.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">statusBarColor / statusBarColorRes</div>
           <div class="annot__note"><p>Màu thanh trạng thái. Đặt cho khớp với nền màn quảng cáo.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">iconCloseRes / iconCloseTint / iconCloseTintRes</div>
-          <div class="annot__note"><p>Nút đóng ở góc màn quảng cáo full-screen — cần tint cho icon vector.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">iconCloseRes / iconCloseDrawable / iconCloseTint / iconCloseTintRes</div>
+          <div class="annot__note"><p>Nút đóng ở góc màn quảng cáo full-screen (hỗ trợ Drawable) và màu tint cho icon.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">closeCountdownTextColor / closeCountdownTextColorRes</div>
+          <div class="annot__note"><p>Màu chữ của bộ đếm ngược đóng quảng cáo (ví dụ "Đóng sau 3s").</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">closeCountdownTextSizeSp / closeCountdownTextSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho dòng đếm ngược (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>13f</code> hoặc <code>R.dimen.sizesp13</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">closeCountdownFontRes: Int?</div>
+          <div class="annot__note"><p>Font chữ riêng cho bộ đếm ngược.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">closeCountdownBackgroundRes / closeCountdownBackgroundDrawable / closeCountdownBackgroundTint / closeCountdownBackgroundTintRes</div>
+          <div class="annot__note"><p>Nền của pill đếm ngược (shape bo góc, màu phủ tint...).</p><span class="annot__default">mặc định: null</span></div>
         </div>
       </div>
 
@@ -1617,8 +1804,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">backgroundRes: Int?</div>
-          <div class="annot__note"><p>Nền màn mất kết nối.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">backgroundRes / backgroundDrawable</div>
+          <div class="annot__note"><p>Nền màn mất kết nối (ảnh Resource hoặc Drawable object).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundColor / backgroundColorRes</div>
+          <div class="annot__note"><p>Màu nền đơn sắc nếu không dùng background drawable.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundTint / backgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho nền màn NoInternet.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1632,8 +1829,13 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">iconRes / iconTint / iconTintRes</div>
-          <div class="annot__note"><p>Icon minh hoạ (ví dụ icon wifi bị gạch) và màu tô cho icon vector.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">headerTitleSizeSp / headerTitleSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho dòng header (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">iconRes / iconDrawable / iconTint / iconTintRes</div>
+          <div class="annot__note"><p>Icon minh hoạ (ví dụ wifi gạch chéo) và màu tô cho icon vector.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1642,8 +1844,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">titleSizeSp / titleSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho tiêu đề chính (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>20f</code> hoặc <code>R.dimen.sizesp20</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">description / descriptionRes / descriptionColor / descriptionColorRes</div>
           <div class="annot__note"><p>Mô tả hướng dẫn người dùng kiểm tra lại mạng.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">descriptionSizeSp / descriptionSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho phần mô tả (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1657,8 +1869,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">btnTryAgainSizeSp / btnTryAgainSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho nút thử lại (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>16f</code> hoặc <code>R.dimen.sizesp16</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">btnTryAgainBackgroundRes / btnTryAgainBackgroundDrawable</div>
           <div class="annot__note"><p>Drawable nền nút thử lại. Hỗ trợ toàn diện gradient drawable resource (khi không truyền tint, thư viện tự động bỏ tint để gradient hiển thị trọn vẹn).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">btnTryAgainBackgroundColor / btnTryAgainBackgroundColorRes</div>
+          <div class="annot__note"><p>Màu nền đơn sắc cho nút thử lại.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1690,8 +1912,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
-          <div class="annot__code">backgroundRes: Int?</div>
-          <div class="annot__note"><p>Nền của hộp thoại.</p><span class="annot__default">mặc định: null</span></div>
+          <div class="annot__code">backgroundRes / backgroundDrawable</div>
+          <div class="annot__note"><p>Nền của hộp thoại (ảnh Resource hoặc Drawable object trực tiếp).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundColor / backgroundColorRes</div>
+          <div class="annot__note"><p>Màu nền đơn sắc cho dialog nếu không dùng drawable.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">backgroundTint / backgroundTintRes</div>
+          <div class="annot__note"><p>Màu tô phủ (tint) cho nền hộp thoại.</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1700,8 +1932,18 @@ dependencies {
         </div>
 
         <div class="annot__row">
+          <div class="annot__code">titleSizeSp / titleSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho tiêu đề dialog (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>18f</code> hoặc <code>R.dimen.sizesp18</code>).</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
           <div class="annot__code">content / contentRes / contentColor / contentColorRes</div>
           <div class="annot__note"><p>Nội dung thông báo bên dưới tiêu đề.</p><span class="annot__default">mặc định: null</span></div>
+        </div>
+
+        <div class="annot__row">
+          <div class="annot__code">contentSizeSp / contentSizeDimenRes</div>
+          <div class="annot__note"><p>Cỡ chữ cho nội dung dialog (<code>Float</code> hoặc <code>@DimenRes</code>, ví dụ <code>14f</code> hoặc <code>R.dimen.sizesp14</code>).</p><span class="annot__default">mặc định: null</span></div>
         </div>
 
         <div class="annot__row">
@@ -1719,6 +1961,19 @@ dependencies {
       </div>
 
       <div class="note">
+        <p class="note__title">✨ Tùy biến Background, Tint &amp; Cỡ chữ (SP) toàn diện</p>
+        <p>
+          Tất cả UI Config đều tuân theo nguyên tắc <b>100% Optional</b> — app chỉ cần truyền những thuộc tính muốn thay đổi, những thuộc tính không truyền sẽ tự động giữ nguyên giao diện gốc XML đã được tối ưu sẵn của Ads Flow:
+        </p>
+        <p>
+          • <b>Background đa năng:</b> Hỗ trợ cả <code>backgroundRes</code> (Resource ID), <code>backgroundDrawable</code> (Drawable object trực tiếp), <code>backgroundColor / backgroundColorRes</code> (màu đơn sắc).<br>
+          • <b>Background Tint:</b> Hỗ trợ <code>backgroundTint</code> (@ColorInt) hoặc <code>backgroundTintRes</code> (@ColorRes) để áp màu phủ lên background mà không cần tạo file drawable mới.<br>
+          • <b>Icon &amp; Nút bấm:</b> Toàn bộ nút Next, Continue, Try Again đều hỗ trợ cấu hình kích thước font (<code>*SizeSp / *SizeDimenRes</code>), nền riêng (<code>btn...BackgroundRes / Drawable / Tint</code>) và icon tint.<br>
+          • <b>Cỡ chữ linh hoạt (SP &amp; DimenRes):</b> Mọi dòng tiêu đề, mô tả, tên app đều có thể điều chỉnh cỡ chữ bằng 2 cách tiện lợi: truyền số thực <code>*SizeSp: Float?</code> (ví dụ: <code>appNameSub1SizeSp = 22f</code>) <b>hoặc</b> truyền dimension resource <code>*SizeDimenRes: Int?</code> (ví dụ: <code>appNameSub1SizeDimenRes = R.dimen.sizesp22</code>). Thư viện tự động đọc pixel theo tỷ lệ màn hình và áp dụng mượt mà.
+        </p>
+      </div>
+
+      <div class="note">
         <p class="note__title">🔤 Đồng bộ Font chữ (Typography) giữa App và Ads Flow</p>
         <p>
           Để toàn bộ văn bản trong thư viện Ads Flow hiển thị đúng nhận diện thương hiệu và font chữ của app, bạn có thể truyền font ở 3 cấp độ linh hoạt:
@@ -1726,6 +1981,7 @@ dependencies {
         <p>
           1. <b>Cấp toàn cục (Toàn flow):</b> Đặt <code>fontRes = R.font.your_font_regular</code> và <code>fontBoldRes = R.font.your_font_bold</code> trực tiếp tại gốc <code>AdsFlowConfig(...)</code>. Tất cả các màn hình Splash, Language, Intro, WelcomeBack, NoInternet và Dialog sẽ tự động áp dụng font đồng bộ.<br>
           2. <b>Cấp màn hình:</b> Đặt <code>fontRes</code> trong từng UI config (ví dụ <code>SplashUiConfig(fontRes = ...)</code>).<br>
+          Template quảng cáo Native và shimmer cấu hình font bằng <a href="#native-ui">style chung ở mục 5.8</a>.<br>
           3. <b>Cấp View cụ thể:</b> Tùy biến chi tiết như <code>appNameSub1FontRes</code>, <code>titleFontRes</code>, <code>fontSelectedRes</code>, <code>itemTitleFontRes</code>, <code>btnTryAgainFontRes</code>...
         </p>
       </div>
@@ -1743,6 +1999,126 @@ dependencies {
           <div class="kv__item"><div class="kv__label">Chữ nút WCB</div><div class="kv__value">ads_welcome_back_btn_continue_text</div></div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ======================= #native-ui ======================= -->
+  <section class="section reveal" id="native-ui">
+    <p class="section__eyebrow">Bước 5.8 · Branding Native</p>
+    <h2 class="section__title">Màu và font chung cho Native Ads</h2>
+    <p class="section__lead">Áp dụng cho 13 template Native và 13 shimmer của LIB. App khai báo palette và typography bằng resource; SDK vẫn ưu tiên ba màu từ Remote Config khi hợp lệ.</p>
+    <div class="section__body">
+      <p>Mục này cần AAR được build sau cập nhật Native styles. Nếu artifact cũ chưa có <code>AdsFlow.Native.Base.*</code>, cập nhật dependency trước khi dùng các style mẫu.</p>
+      <h3>Quy tắc ưu tiên</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Thành phần</th><th>Ưu tiên</th></tr></thead>
+        <tbody>
+          <tr><td>Nền Native: <code>background_color</code></td><td>RC hợp lệ → <code>ads_native_bg</code> của app → mặc định LIB</td></tr>
+          <tr><td>Viền Native: <code>border_color</code></td><td>RC hợp lệ → màu/độ rộng viền resource app → mặc định LIB</td></tr>
+          <tr><td>Nền CTA: <code>button_color</code></td><td>RC hợp lệ → <code>ads_native_btn_install_bg</code> của app → mặc định LIB</td></tr>
+          <tr><td>Headline, body, chữ CTA, secondary, font</td><td>Resource/style app → mặc định LIB</td></tr>
+          <tr><td>Nhãn <code>ad_attribution</code></td><td>Màu nền, chữ và font riêng của app; không dùng chung nền CTA</td></tr>
+        </tbody>
+      </table></div>
+      <p>RC <code>""</code>, <code>null</code> hoặc màu sai định dạng không ghi đè fallback. <code>#00000000</code> là màu trong suốt được chỉ định rõ, vẫn có ưu tiên RC. SDK tô nền/viền/CTA lúc bind; không apply màu app lại sau bước đó.</p>
+      <h3>1. Palette tại app — ads_brand.xml</h3>
+      <p>Tạo file trong <code>app/src/main/res/values/</code>. Chỉ khai báo các màu cần thay đổi; bỏ một giá trị sẽ dùng mặc định LIB. Nếu app đã có các tên này trong <code>colors.xml</code>, sửa tại đó hoặc chuyển chúng sang file mới, tránh khai báo trùng.</p>
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/src/main/res/values/ads_brand.xml</span>
+          <span class="code__tag">xml</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources&gt;
+    &lt;!-- Fallback khi màu RC trống, null hoặc không hợp lệ --&gt;
+    &lt;color name=&quot;ads_native_bg&quot;&gt;#101114&lt;/color&gt;
+    &lt;color name=&quot;ads_native_border_color&quot;&gt;#00000000&lt;/color&gt;
+    &lt;color name=&quot;ads_native_btn_install_bg&quot;&gt;#566DFF&lt;/color&gt;
+
+    &lt;!-- Text/font do app quyết định --&gt;
+    &lt;color name=&quot;ads_native_headline_text&quot;&gt;#FFFFFF&lt;/color&gt;
+    &lt;color name=&quot;ads_native_body_text&quot;&gt;#B5B5B5&lt;/color&gt;
+    &lt;color name=&quot;ads_native_btn_install_text&quot;&gt;#FFFFFF&lt;/color&gt;
+    &lt;color name=&quot;ads_native_secondary_info_text&quot;&gt;#A0A0A0&lt;/color&gt;
+    &lt;color name=&quot;ads_native_attribution_bg&quot;&gt;#166A54&lt;/color&gt;
+    &lt;color name=&quot;ads_native_attribution_text&quot;&gt;#FFFFFF&lt;/color&gt;
+    &lt;color name=&quot;ads_shimmer_placeholder&quot;&gt;#292A30&lt;/color&gt;
+&lt;/resources&gt;</code></pre>
+      </div>
+
+      <h3>2. Font tại app — ads_typography.xml</h3>
+      <p>Ghi đè public style và kế thừa đúng <code>AdsFlow.Native.Base.*</code>. Khai báo cả <code>android:fontFamily</code> và <code>fontFamily</code> để thống nhất TextView/AppCompatButton. Các font minh họa dưới đây đã có trong LIB; có thể thay bằng font đóng gói trong <code>res/font</code> của app.</p>
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">app/src/main/res/values/ads_typography.xml</span>
+          <span class="code__tag">xml</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources&gt;
+    &lt;!-- Consumer example: override public roles; keep LIB base defaults for other fields. --&gt;
+    &lt;style name=&quot;AdsFlow.Native.Headline&quot; parent=&quot;AdsFlow.Native.Base.Headline&quot;&gt;
+        &lt;item name=&quot;android:fontFamily&quot;&gt;@font/manrope_semibold&lt;/item&gt;
+        &lt;item name=&quot;fontFamily&quot;&gt;@font/manrope_semibold&lt;/item&gt;
+        &lt;item name=&quot;android:textStyle&quot;&gt;normal&lt;/item&gt;
+    &lt;/style&gt;
+    &lt;style name=&quot;AdsFlow.Native.Body&quot; parent=&quot;AdsFlow.Native.Base.Body&quot;&gt;
+        &lt;item name=&quot;android:fontFamily&quot;&gt;@font/manrope_medium&lt;/item&gt;
+        &lt;item name=&quot;fontFamily&quot;&gt;@font/manrope_medium&lt;/item&gt;
+    &lt;/style&gt;
+    &lt;style name=&quot;AdsFlow.Native.CallToAction&quot; parent=&quot;AdsFlow.Native.Base.CallToAction&quot;&gt;
+        &lt;item name=&quot;android:fontFamily&quot;&gt;@font/manrope_extrabold&lt;/item&gt;
+        &lt;item name=&quot;fontFamily&quot;&gt;@font/manrope_extrabold&lt;/item&gt;
+    &lt;/style&gt;
+    &lt;style name=&quot;AdsFlow.Native.Attribution&quot; parent=&quot;AdsFlow.Native.Base.Attribution&quot;&gt;
+        &lt;item name=&quot;android:fontFamily&quot;&gt;@font/telex_regular&lt;/item&gt;
+        &lt;item name=&quot;fontFamily&quot;&gt;@font/telex_regular&lt;/item&gt;
+    &lt;/style&gt;
+    &lt;style name=&quot;AdsFlow.Native.Secondary&quot; parent=&quot;AdsFlow.Native.Base.Secondary&quot;&gt;
+        &lt;item name=&quot;android:fontFamily&quot;&gt;@font/manrope_medium&lt;/item&gt;
+        &lt;item name=&quot;fontFamily&quot;&gt;@font/manrope_medium&lt;/item&gt;
+    &lt;/style&gt;
+&lt;/resources&gt;</code></pre>
+      </div>
+
+      <p><code>Secondary</code> dùng cho advertiser/price/store trong template hiện có. <code>Advertiser</code> là role bổ sung cho custom layout dùng <code>AppTheme.AdAdvertiser</code>. Màu sao của RatingBar cần tint riêng, không phải màu chữ secondary.</p>
+      <h3>3. Remote Config vẫn điều khiển ba màu</h3>
+      <div class="code">
+        <div class="code__bar">
+          <span class="code__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="code__file">Ví dụ trong cấu hình Native trên Firebase Remote Config</span>
+          <span class="code__tag">json</span>
+          <button class="code__copy">Copy</button>
+        </div>
+<pre><code>{
+  &quot;background_color&quot;: &quot;#070707&quot;,
+  &quot;border_color&quot;: &quot;&quot;,
+  &quot;button_color&quot;: &quot;#566DFF&quot;
+}</code></pre>
+      </div>
+
+      <p>Với ví dụ này, nền Native dùng <code>#070707</code>, CTA dùng <code>#566DFF</code>, viền dùng fallback vì RC rỗng. Màu chữ, font và badge Ad vẫn lấy từ app.</p>
+      <div class="note">
+        <p class="note__title">Language INIT và phạm vi font</p>
+        <p>INIT/CHILD/DROPDOWN cùng tuân theo <code>native_language.button_color</code>. INIT đã bỏ ép CTA <code>#828282</code>; khi RC trống sẽ dùng màu CTA resource của app. <code>AdsFlowConfig.fontRes/fontBoldRes</code> cấu hình UI màn flow; typography của template Native dùng các style ở trên.</p>
+      </div>
+      <h3>4. Resource kích thước và tương thích</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Resource</th><th>Mặc định</th></tr></thead>
+        <tbody>
+          <tr><td><code>ads_native_corner_radius</code>, <code>ads_native_cta_corner_radius</code>, <code>ads_native_attribution_corner_radius</code></td><td>8dp</td></tr>
+          <tr><td><code>ads_native_border_width</code></td><td>0dp; app muốn viền fallback thì đặt độ rộng &gt; 0 và màu viền. RC border hợp lệ dùng nét viền 1px theo SDK hiện hành.</td></tr>
+          <tr><td><code>ads_native_headline_text_size</code>, <code>ads_native_body_text_size</code>, <code>ads_native_cta_text_size</code></td><td>Theo sizesp16 / sizesp12 / sizesp14 hiện tại</td></tr>
+          <tr><td><code>ads_native_attribution_text_size</code>, <code>ads_native_secondary_text_size</code></td><td>Theo sizesp12 / sizesp10 hiện tại</td></tr>
+          <tr><td><code>ads_native_medium_6_headline_text_size</code>, <code>ads_native_medium_6_body_text_size</code></td><td>Theo sizesp12 / sizesp11; giữ riêng cho template compact</td></tr>
+        </tbody>
+      </table></div>
+      <p>Style LIB nằm ở <code>ads_styles_native.xml</code>. Các alias <code>AppTheme.AdHeadline</code>, <code>AppTheme.AdBody</code>, <code>AppTheme.AdCallToAction</code>, <code>AppTheme.AdAttribution</code> và các alias cũ khác tiếp tục hoạt động. Override legacy trực tiếp tại app vẫn có ưu tiên. Advertiser giữ chuỗi <code>AppTheme.Advertiser → AppTheme.AdAdvertiser</code>; role typography đi qua <code>android:textAppearance</code>. Vì vậy các thuộc tính trực tiếp trên legacy parent (kể cả màu/font/size) có thể thắng role Secondary.</p>
+      <p>Nếu app còn bản copy <code>res/drawable/bg_native_small.xml</code>, file đó sẽ ghi đè drawable của LIB. Khi chỉ đổi palette/font, dùng drawable LIB và bỏ bản copy trùng. Nếu giữ drawable riêng, tự tham chiếu các token <code>ads_native_bg</code>, <code>ads_native_border_color</code>, <code>ads_native_border_width</code> và <code>ads_native_corner_radius</code> để fallback màu/viền/bo góc có hiệu lực.</p>
+      <p>Giữ nguyên ID/tag SDK, ví dụ <code>adHeadline</code>, <code>adBody</code>, <code>adCallToAction</code>, <code>adAttribution</code>. Badge Ad và AdChoices phải rõ ràng. Thay resource/style không tạo thêm request quảng cáo và không đổi preload, retry hoặc thời điểm điều hướng.</p>
     </div>
   </section>
 
@@ -2277,6 +2653,8 @@ nativePlacement = AdNativeManager.loadAndShowListId(
     <span class="tok-kw">super</span>.onDestroy()
 }</code></pre>
       </div>
+
+      <p>Tùy chỉnh màu/font của template: xem <a href="#native-ui">mục 5.8 — Native Ads branding</a>. RC vẫn ưu tiên nền, viền và nền CTA.</p>
 
       <!-- 9.3 Interstitial -->
       <h3>9.3. Interstitial Ad — AdInterManager</h3>
